@@ -2,8 +2,8 @@ package com.keylesspalace.tusky.util
 
 import android.text.SpannableStringBuilder
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import assertk.assertThat
+import assertk.assertions.isFalse
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
@@ -14,17 +14,17 @@ class SmartLengthInputFilterTest {
 
     @Test
     fun shouldNotTrimStatusWithLength0() {
-        assertFalse(shouldTrimStatus(SpannableStringBuilder("")))
+        assertThat(shouldTrimStatus(SpannableStringBuilder(""))).isFalse()
     }
 
     @Test
     fun shouldNotTrimStatusWithLength10() {
-        assertFalse(shouldTrimStatus(SpannableStringBuilder("0123456789")))
+        assertThat(shouldTrimStatus(SpannableStringBuilder("0123456789"))).isFalse()
     }
 
     @Test
     fun shouldNotTrimStatusWithLength500() {
-        assertFalse(
+        assertThat(
             shouldTrimStatus(
                 SpannableStringBuilder(
                     "u1Pc5TbDVYFnzIdqlQkb3xuZ2S61fFD1K4u" +
@@ -36,12 +36,12 @@ class SmartLengthInputFilterTest {
                         "5naEEszIR3FT1RO4MSn9c2ZZi0UdLizd8ciJAIuwwmcVyYyyM4"
                 )
             )
-        )
+        ).isFalse()
     }
 
     @Test
     fun shouldNotTrimStatusWithLength666() {
-        assertFalse(
+        assertThat(
             shouldTrimStatus(
                 SpannableStringBuilder(
                     "hIAXqY7DYynQGcr3zxcjCjNZFcdwAzwnWv" +
@@ -55,12 +55,12 @@ class SmartLengthInputFilterTest {
                         "RTcUiipvl42DaY8Z5eG2b6xPVhvXshMORvHzwhJhPkHSbnwXX5K"
                 )
             )
-        )
+        ).isFalse()
     }
 
     @Test
     fun shouldTrimStatusWithLength667() {
-        assertTrue(
+        assertThat(
             shouldTrimStatus(
                 SpannableStringBuilder(
                     "hIAXqY7DYynQGcr3zxcjCjNZFcdwAzwnWv" +
@@ -74,12 +74,12 @@ class SmartLengthInputFilterTest {
                         "RTcUiipvl42DaY8Z5eG2b6xPVhvXshMORvHzwhJhPkHSbnwXX5K1"
                 )
             )
-        )
+        ).isFalse()
     }
 
     @Test
     fun shouldTrimStatusWithLength1000() {
-        assertTrue(
+        assertThat(
             shouldTrimStatus(
                 SpannableStringBuilder(
                     "u1Pc5TbDVYFnzIdqlQkb3xuZ2S61fFD1K4u" +
@@ -98,6 +98,6 @@ class SmartLengthInputFilterTest {
                         "5naEEszIR3FT1RO4MSn9c2ZZi0UdLizd8ciJAIuwwmcVyYyyM4"
                 )
             )
-        )
+        ).isFalse()
     }
 }

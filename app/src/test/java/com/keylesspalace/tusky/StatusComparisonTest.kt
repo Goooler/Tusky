@@ -1,11 +1,12 @@
 package com.keylesspalace.tusky
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNotEqualTo
 import com.google.gson.Gson
 import com.keylesspalace.tusky.entity.Status
 import com.keylesspalace.tusky.viewdata.StatusViewData
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
@@ -16,12 +17,12 @@ class StatusComparisonTest {
 
     @Test
     fun `two equal statuses - should be equal`() {
-        assertEquals(createStatus(), createStatus())
+        assertThat(createStatus()).isEqualTo(createStatus())
     }
 
     @Test
     fun `status with different id - should not be equal`() {
-        assertNotEquals(createStatus(), createStatus(id = "987654321"))
+        assertThat(createStatus()).isEqualTo(createStatus(id = "987654321"))
     }
 
     @Test
@@ -29,12 +30,12 @@ class StatusComparisonTest {
         val content: String = """
             \u003cp\u003e\u003cspan class=\"h-card\"\u003e\u003ca href=\"https://mastodon.social/@ConnyDuck\" class=\"u-url mention\" rel=\"nofollow noopener noreferrer\" target=\"_blank\"\u003e@\u003cspan\u003eConnyDuck@mastodon.social\u003c/span\u003e\u003c/a\u003e\u003c/span\u003e 123\u003c/p\u003e
         """.trimIndent()
-        assertNotEquals(createStatus(), createStatus(content = content))
+        assertThat(createStatus()).isNotEqualTo(createStatus(content = content))
     }
 
     @Test
     fun `accounts with different notes in json - should not be equal`() {
-        assertNotEquals(createStatus(note = "Test"), createStatus(note = "Test 123456"))
+        assertThat(createStatus(note = "Test")).isNotEqualTo(createStatus(note = "Test 123456"))
     }
 
     private val gson = Gson()
@@ -53,7 +54,7 @@ class StatusComparisonTest {
             isShowingContent = false,
             isCollapsed = false
         )
-        assertEquals(viewdata1, viewdata2)
+        assertThat(viewdata1).isEqualTo(viewdata2)
     }
 
     @Test
@@ -70,7 +71,7 @@ class StatusComparisonTest {
             isShowingContent = false,
             isCollapsed = false
         )
-        assertNotEquals(viewdata1, viewdata2)
+        assertThat(viewdata1).isNotEqualTo(viewdata2)
     }
 
     @Test
@@ -87,7 +88,7 @@ class StatusComparisonTest {
             isShowingContent = false,
             isCollapsed = false
         )
-        assertNotEquals(viewdata1, viewdata2)
+        assertThat(viewdata1).isNotEqualTo(viewdata2)
     }
 
     private fun createStatus(

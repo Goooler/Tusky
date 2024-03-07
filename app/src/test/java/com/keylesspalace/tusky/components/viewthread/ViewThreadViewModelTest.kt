@@ -5,6 +5,8 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import at.connyduck.calladapter.networkresult.NetworkResult
 import com.google.gson.Gson
 import com.keylesspalace.tusky.appstore.EventHub
@@ -23,7 +25,6 @@ import java.io.IOException
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -113,7 +114,7 @@ class ViewThreadViewModelTest {
         viewModel.loadThread(threadId)
 
         runBlocking {
-            assertEquals(
+            assertThat(
                 ThreadUiState.Success(
                     statusViewData = listOf(
                         mockStatusViewData(id = "1", spoilerText = "Test"),
@@ -123,8 +124,7 @@ class ViewThreadViewModelTest {
                     detailedStatusPosition = 1,
                     revealButton = RevealButtonState.REVEAL
                 ),
-                viewModel.uiState.first()
-            )
+            ).isEqualTo(viewModel.uiState.first())
         }
     }
 
@@ -138,16 +138,16 @@ class ViewThreadViewModelTest {
         viewModel.loadThread(threadId)
 
         runBlocking {
-            assertEquals(
+            assertThat(
                 ThreadUiState.Success(
                     statusViewData = listOf(
+                        mockStatusViewData(id = "1"),
                         mockStatusViewData(id = "2", inReplyToId = "1", inReplyToAccountId = "1", isDetailed = true)
                     ),
-                    detailedStatusPosition = 0,
+                    detailedStatusPosition = 1,
                     revealButton = RevealButtonState.NO_BUTTON
                 ),
-                viewModel.uiState.first()
-            )
+            ).isEqualTo(viewModel.uiState.first())
         }
     }
 
@@ -161,10 +161,7 @@ class ViewThreadViewModelTest {
         viewModel.loadThread(threadId)
 
         runBlocking {
-            assertEquals(
-                ThreadUiState.Error::class.java,
-                viewModel.uiState.first().javaClass
-            )
+            assertThat(ThreadUiState.Error::class.java,).isEqualTo(viewModel.uiState.first())
         }
     }
 
@@ -183,10 +180,7 @@ class ViewThreadViewModelTest {
         viewModel.loadThread(threadId)
 
         runBlocking {
-            assertEquals(
-                ThreadUiState.Error::class.java,
-                viewModel.uiState.first().javaClass
-            )
+            assertThat(ThreadUiState.Error::class.java).isEqualTo(viewModel.uiState.first())
         }
     }
 
@@ -198,7 +192,7 @@ class ViewThreadViewModelTest {
         viewModel.toggleRevealButton()
 
         runBlocking {
-            assertEquals(
+            assertThat(
                 ThreadUiState.Success(
                     statusViewData = listOf(
                         mockStatusViewData(id = "1", spoilerText = "Test", isExpanded = true),
@@ -207,9 +201,8 @@ class ViewThreadViewModelTest {
                     ),
                     detailedStatusPosition = 1,
                     revealButton = RevealButtonState.HIDE
-                ),
-                viewModel.uiState.first()
-            )
+                )
+            ).isEqualTo(viewModel.uiState.first())
         }
     }
 
@@ -222,7 +215,7 @@ class ViewThreadViewModelTest {
         runBlocking {
             eventHub.dispatch(StatusChangedEvent(mockStatus(id = "1", spoilerText = "Test", favourited = false)))
 
-            assertEquals(
+            assertThat(
                 ThreadUiState.Success(
                     statusViewData = listOf(
                         mockStatusViewData(id = "1", spoilerText = "Test", favourited = false),
@@ -231,9 +224,8 @@ class ViewThreadViewModelTest {
                     ),
                     detailedStatusPosition = 1,
                     revealButton = RevealButtonState.REVEAL
-                ),
-                viewModel.uiState.first()
-            )
+                )
+            ).isEqualTo(viewModel.uiState.first())
         }
     }
 
@@ -246,7 +238,7 @@ class ViewThreadViewModelTest {
         viewModel.removeStatus(mockStatusViewData(id = "3", inReplyToId = "2", inReplyToAccountId = "1", spoilerText = "Test"))
 
         runBlocking {
-            assertEquals(
+            assertThat(
                 ThreadUiState.Success(
                     statusViewData = listOf(
                         mockStatusViewData(id = "1", spoilerText = "Test"),
@@ -254,9 +246,8 @@ class ViewThreadViewModelTest {
                     ),
                     detailedStatusPosition = 1,
                     revealButton = RevealButtonState.REVEAL
-                ),
-                viewModel.uiState.first()
-            )
+                )
+            ).isEqualTo(viewModel.uiState.first())
         }
     }
 
@@ -272,7 +263,7 @@ class ViewThreadViewModelTest {
         )
 
         runBlocking {
-            assertEquals(
+            assertThat(
                 ThreadUiState.Success(
                     statusViewData = listOf(
                         mockStatusViewData(id = "1", spoilerText = "Test"),
@@ -281,9 +272,8 @@ class ViewThreadViewModelTest {
                     ),
                     detailedStatusPosition = 1,
                     revealButton = RevealButtonState.REVEAL
-                ),
-                viewModel.uiState.first()
-            )
+                )
+            ).isEqualTo(viewModel.uiState.first())
         }
     }
 
@@ -299,7 +289,7 @@ class ViewThreadViewModelTest {
         )
 
         runBlocking {
-            assertEquals(
+            assertThat(
                 ThreadUiState.Success(
                     statusViewData = listOf(
                         mockStatusViewData(id = "1", spoilerText = "Test"),
@@ -308,9 +298,8 @@ class ViewThreadViewModelTest {
                     ),
                     detailedStatusPosition = 1,
                     revealButton = RevealButtonState.REVEAL
-                ),
-                viewModel.uiState.first()
-            )
+                )
+            ).isEqualTo(viewModel.uiState.first())
         }
     }
 
@@ -326,7 +315,7 @@ class ViewThreadViewModelTest {
         )
 
         runBlocking {
-            assertEquals(
+            assertThat(
                 ThreadUiState.Success(
                     statusViewData = listOf(
                         mockStatusViewData(id = "1", spoilerText = "Test"),
@@ -335,9 +324,8 @@ class ViewThreadViewModelTest {
                     ),
                     detailedStatusPosition = 1,
                     revealButton = RevealButtonState.REVEAL
-                ),
-                viewModel.uiState.first()
-            )
+                )
+            ).isEqualTo(viewModel.uiState.first())
         }
     }
 

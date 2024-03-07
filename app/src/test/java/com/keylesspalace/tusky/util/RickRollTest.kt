@@ -2,8 +2,9 @@ package com.keylesspalace.tusky.util
 
 import android.app.Activity
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import assertk.assertThat
+import assertk.assertions.isFalse
+import assertk.assertions.isTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -25,12 +26,12 @@ class RickRollTest {
     fun testShouldRickRoll() {
         listOf("gab.Com", "social.gab.ai", "whatever.GAB.com").forEach {
                 rollableDomain ->
-            assertTrue(shouldRickRoll(activity, rollableDomain))
+            assertThat(shouldRickRoll(activity, rollableDomain)).isTrue()
         }
 
         listOf("chaos.social", "notgab.com").forEach {
                 notRollableDomain ->
-            assertFalse(shouldRickRoll(activity, notRollableDomain))
+            assertThat(shouldRickRoll(activity, notRollableDomain)).isFalse()
         }
     }
 }

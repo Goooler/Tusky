@@ -5,7 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import com.keylesspalace.tusky.R
 
-fun shouldRickRoll(context: Context, domain: String) =
+fun shouldRickRoll(context: Context, domain: String): Boolean =
     context.resources.getStringArray(R.array.rick_roll_domains).any { candidate ->
         domain.equals(candidate, true) || domain.endsWith(".$candidate", true)
     }

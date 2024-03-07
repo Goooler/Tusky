@@ -2,6 +2,8 @@ package com.keylesspalace.tusky.usecase
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import at.connyduck.calladapter.networkresult.NetworkResult
 import com.keylesspalace.tusky.appstore.EventHub
 import com.keylesspalace.tusky.appstore.StatusChangedEvent
@@ -10,7 +12,6 @@ import com.keylesspalace.tusky.network.MastodonApi
 import java.util.Date
 import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody.Companion.toResponseBody
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -49,7 +50,7 @@ class TimelineCasesTest {
         runBlocking {
             eventHub.events.test {
                 timelineCases.pin(statusId, true)
-                assertEquals(StatusChangedEvent(pinnedStatus), awaitItem())
+                assertThat(awaitItem()).isEqualTo(StatusChangedEvent(pinnedStatus))
             }
         }
     }
@@ -67,10 +68,9 @@ class TimelineCasesTest {
             )
         }
         runBlocking {
-            assertEquals(
-                "Validation Failed: You have already pinned the maximum number of toots",
+            assertThat(
                 timelineCases.pin(statusId, true).exceptionOrNull()?.message
-            )
+            ).isEqualTo("Validation Failed: You have already pinned the maximum number of toots")
         }
     }
 

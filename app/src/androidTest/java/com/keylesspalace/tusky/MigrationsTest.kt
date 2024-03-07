@@ -4,8 +4,9 @@ import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.keylesspalace.tusky.db.AppDatabase
-import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -58,11 +59,11 @@ class MigrationsTest {
 
         val cursor = newDb.query("SELECT * FROM AccountEntity")
         cursor.moveToFirst()
-        assertEquals(id, cursor.getInt(0))
-        assertEquals(domain, cursor.getString(1))
-        assertEquals(token, cursor.getString(2))
-        assertEquals(active, cursor.getInt(3) != 0)
-        assertEquals(accountId, cursor.getString(4))
-        assertEquals(username, cursor.getString(5))
+        assertThat(id).isEqualTo(cursor.getInt(0))
+        assertThat(domain).isEqualTo(cursor.getString(1))
+        assertThat(token).isEqualTo(cursor.getString(2))
+        assertThat(active).isEqualTo(cursor.getInt(3) != 0)
+        assertThat(accountId).isEqualTo(cursor.getString(4))
+        assertThat(username).isEqualTo(cursor.getString(5))
     }
 }

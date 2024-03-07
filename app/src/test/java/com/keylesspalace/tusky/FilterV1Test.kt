@@ -18,6 +18,8 @@
 package com.keylesspalace.tusky
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.keylesspalace.tusky.components.filters.EditFilterActivity
 import com.keylesspalace.tusky.entity.Attachment
 import com.keylesspalace.tusky.entity.Filter
@@ -28,7 +30,6 @@ import com.keylesspalace.tusky.entity.Status
 import com.keylesspalace.tusky.network.FilterModel
 import java.time.Instant
 import java.util.Date
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -108,71 +109,43 @@ class FilterV1Test {
 
     @Test
     fun shouldNotFilter() {
-        assertEquals(
-            Filter.Action.NONE,
-            filterModel.shouldFilterStatus(
-                mockStatus(content = "should not be filtered")
-            )
-        )
+        assertThat(filterModel.shouldFilterStatus(mockStatus(content = "should not be filtered")))
+            .isEqualTo(Filter.Action.NONE)
     }
 
     @Test
     fun shouldFilter_whenContentMatchesBadWord() {
-        assertEquals(
-            Filter.Action.HIDE,
-            filterModel.shouldFilterStatus(
-                mockStatus(content = "one two badWord three")
-            )
-        )
+        assertThat(filterModel.shouldFilterStatus(mockStatus(content = "one two badWord three")))
+            .isEqualTo(Filter.Action.HIDE)
     }
 
     @Test
     fun shouldFilter_whenContentMatchesBadWordPart() {
-        assertEquals(
-            Filter.Action.HIDE,
-            filterModel.shouldFilterStatus(
-                mockStatus(content = "one two badWordPart three")
-            )
-        )
+        assertThat(filterModel.shouldFilterStatus(mockStatus(content = "one two badWordPart three")))
+            .isEqualTo(Filter.Action.HIDE)
     }
 
     @Test
     fun shouldFilter_whenContentMatchesBadWholeWord() {
-        assertEquals(
-            Filter.Action.HIDE,
-            filterModel.shouldFilterStatus(
-                mockStatus(content = "one two badWholeWord three")
-            )
-        )
+        assertThat(filterModel.shouldFilterStatus(mockStatus(content = "one two badWholeWord three")))
+            .isEqualTo(Filter.Action.HIDE)
     }
 
     @Test
     fun shouldNotFilter_whenContentDoesNotMatchWholeWord() {
-        assertEquals(
-            Filter.Action.NONE,
-            filterModel.shouldFilterStatus(
-                mockStatus(content = "one two badWholeWordTest three")
-            )
-        )
+        assertThat(filterModel.shouldFilterStatus(mockStatus(content = "one two badWholeWordPart three")))
+            .isEqualTo(Filter.Action.NONE)
     }
 
     @Test
     fun shouldFilter_whenSpoilerTextDoesMatch() {
-        assertEquals(
-            Filter.Action.HIDE,
-            filterModel.shouldFilterStatus(
-                mockStatus(
-                    content = "should not be filtered",
-                    spoilerText = "badWord should be filtered"
-                )
-            )
-        )
+        assertThat(filterModel.shouldFilterStatus(mockStatus(spoilerText = "badWord should be filtered")))
+            .isEqualTo(Filter.Action.HIDE)
     }
 
     @Test
     fun shouldFilter_whenPollTextDoesMatch() {
-        assertEquals(
-            Filter.Action.HIDE,
+        assertThat(
             filterModel.shouldFilterStatus(
                 mockStatus(
                     content = "should not be filtered",
@@ -180,13 +153,12 @@ class FilterV1Test {
                     pollOptions = listOf("should not be filtered", "badWord")
                 )
             )
-        )
+        ).isEqualTo(Filter.Action.HIDE)
     }
 
     @Test
     fun shouldFilter_whenMediaDescriptionDoesMatch() {
-        assertEquals(
-            Filter.Action.HIDE,
+        assertThat(
             filterModel.shouldFilterStatus(
                 mockStatus(
                     content = "should not be filtered",
@@ -194,67 +166,55 @@ class FilterV1Test {
                     attachmentsDescriptions = listOf("should not be filtered", "badWord")
                 )
             )
-        )
+        ).isEqualTo(Filter.Action.HIDE)
     }
 
     @Test
     fun shouldFilterPartialWord_whenWholeWordFilterContainsNonAlphanumericCharacters() {
-        assertEquals(
-            Filter.Action.HIDE,
-            filterModel.shouldFilterStatus(
-                mockStatus(content = "one two someone@twitter.com three")
-            )
-        )
+        assertThat(filterModel.shouldFilterStatus(mockStatus(content = "one two someone@twitter.com three")))
+            .isEqualTo(Filter.Action.HIDE)
     }
 
     @Test
     fun shouldFilterHashtags() {
-        assertEquals(
-            Filter.Action.HIDE,
-            filterModel.shouldFilterStatus(
-                mockStatus(content = "#hashtag one two three")
-            )
-        )
+        assertThat(filterModel.shouldFilterStatus(mockStatus(content = "#hashtag one two three")))
+            .isEqualTo(Filter.Action.HIDE)
     }
 
     @Test
     fun shouldFilterHashtags_whenContentIsMarkedUp() {
-        assertEquals(
-            Filter.Action.HIDE,
+        assertThat(
             filterModel.shouldFilterStatus(
-                mockStatus(content = "<p><a href=\"https://foo.bar/tags/hashtag\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\">#<span>hashtag</span></a>one two three</p>")
+                mockStatus(content = "<p>#<a href=\"https://foo.bar/tags/hashtag\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\"><span>hashtag</span></a>one two three</p>")
             )
-        )
+        ).isEqualTo(Filter.Action.HIDE)
     }
 
     @Test
     fun shouldNotFilterHtmlAttributes() {
-        assertEquals(
-            Filter.Action.NONE,
+        assertThat(
             filterModel.shouldFilterStatus(
                 mockStatus(content = "<p><a href=\"https://foo.bar/\">https://foo.bar/</a> one two three</p>")
             )
-        )
+        ).isEqualTo(Filter.Action.NONE)
     }
 
     @Test
     fun shouldNotFilter_whenFilterIsExpired() {
-        assertEquals(
-            Filter.Action.NONE,
+        assertThat(
             filterModel.shouldFilterStatus(
                 mockStatus(content = "content matching expired filter should not be filtered")
             )
-        )
+        ).isEqualTo(Filter.Action.NONE)
     }
 
     @Test
     fun shouldFilter_whenFilterIsUnexpired() {
-        assertEquals(
-            Filter.Action.HIDE,
+        assertThat(
             filterModel.shouldFilterStatus(
                 mockStatus(content = "content matching unexpired filter should be filtered")
             )
-        )
+        ).isEqualTo(Filter.Action.HIDE)
     }
 
     @Test

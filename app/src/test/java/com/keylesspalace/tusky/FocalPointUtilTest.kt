@@ -15,10 +15,10 @@
 
 package com.keylesspalace.tusky
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.keylesspalace.tusky.util.FocalPointUtil
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class FocalPointUtilTest {
@@ -27,6 +27,7 @@ class FocalPointUtilTest {
     // focal[X|Y]ToCoordinate tests
     @Test
     fun positiveFocalXToCoordinateTest() {
+        assertThat(FocalPointUtil.focalXToCoordinate(0.4f)).isEqualTo(0.7f, eps)
         assertEquals(FocalPointUtil.focalXToCoordinate(0.4f), 0.7f, eps)
     }
 

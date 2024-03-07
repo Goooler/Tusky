@@ -10,6 +10,9 @@ import androidx.paging.RemoteMediator
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import com.google.gson.Gson
 import com.keylesspalace.tusky.components.timeline.viewmodel.CachedTimelineRemoteMediator
 import com.keylesspalace.tusky.db.AccountEntity
@@ -22,9 +25,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -85,9 +85,9 @@ class CachedTimelineRemoteMediatorTest {
 
         val result = runBlocking { remoteMediator.load(LoadType.REFRESH, state()) }
 
-        assertTrue(result is RemoteMediator.MediatorResult.Error)
-        assertTrue((result as RemoteMediator.MediatorResult.Error).throwable is HttpException)
-        assertEquals(500, (result.throwable as HttpException).code())
+        assertThat(result).isInstanceOf(RemoteMediator.MediatorResult.Error::class)
+        assertThat((result as RemoteMediator.MediatorResult.Error).throwable).isInstanceOf(HttpException::class)
+        assertThat((result.throwable as HttpException).code()).isEqualTo(500)
     }
 
     @Test
@@ -104,8 +104,8 @@ class CachedTimelineRemoteMediatorTest {
 
         val result = runBlocking { remoteMediator.load(LoadType.REFRESH, state()) }
 
-        assertTrue(result is RemoteMediator.MediatorResult.Error)
-        assertTrue((result as RemoteMediator.MediatorResult.Error).throwable is IOException)
+        assertThat(result).isInstanceOf(RemoteMediator.MediatorResult.Error::class)
+        assertThat((result as RemoteMediator.MediatorResult.Error).throwable).isInstanceOf(IOException::class)
     }
 
     @Test
@@ -132,8 +132,8 @@ class CachedTimelineRemoteMediatorTest {
 
         val result = runBlocking { remoteMediator.load(LoadType.PREPEND, state) }
 
-        assertTrue(result is RemoteMediator.MediatorResult.Success)
-        assertTrue((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
+        assertThat(result).isInstanceOf(RemoteMediator.MediatorResult.Success::class)
+        assertThat((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached).isEqualTo(true)
     }
 
     @Test
@@ -182,8 +182,8 @@ class CachedTimelineRemoteMediatorTest {
 
         val result = runBlocking { remoteMediator.load(LoadType.REFRESH, state) }
 
-        assertTrue(result is RemoteMediator.MediatorResult.Success)
-        assertEquals(false, (result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
+        assertThat(result).isInstanceOf(RemoteMediator.MediatorResult.Success::class)
+        assertThat((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached).isEqualTo(false)
 
         db.assertStatuses(
             listOf(
@@ -244,8 +244,8 @@ class CachedTimelineRemoteMediatorTest {
 
         val result = runBlocking { remoteMediator.load(LoadType.REFRESH, state) }
 
-        assertTrue(result is RemoteMediator.MediatorResult.Success)
-        assertEquals(false, (result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
+        assertThat(result).isInstanceOf(RemoteMediator.MediatorResult.Success::class)
+        assertThat((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached).isEqualTo(false)
 
         db.assertStatuses(
             listOf(
@@ -305,8 +305,8 @@ class CachedTimelineRemoteMediatorTest {
 
         val result = runBlocking { remoteMediator.load(LoadType.REFRESH, state) }
 
-        assertTrue(result is RemoteMediator.MediatorResult.Success)
-        assertEquals(false, (result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
+        assertThat(result).isInstanceOf(RemoteMediator.MediatorResult.Success::class)
+        assertThat((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached).isEqualTo(false)
 
         db.assertStatuses(
             listOf(
@@ -349,8 +349,8 @@ class CachedTimelineRemoteMediatorTest {
 
         val result = runBlocking { remoteMediator.load(LoadType.REFRESH, state) }
 
-        assertTrue(result is RemoteMediator.MediatorResult.Success)
-        assertEquals(false, (result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
+        assertThat(result).isInstanceOf(RemoteMediator.MediatorResult.Success::class)
+        assertThat((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached).isEqualTo(false)
 
         db.assertStatuses(
             listOf(
@@ -400,8 +400,8 @@ class CachedTimelineRemoteMediatorTest {
 
         val result = runBlocking { remoteMediator.load(LoadType.REFRESH, state) }
 
-        assertTrue(result is RemoteMediator.MediatorResult.Success)
-        assertTrue((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
+        assertThat(result).isInstanceOf(RemoteMediator.MediatorResult.Success::class)
+        assertThat((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached).isEqualTo(true)
 
         db.assertStatuses(
             listOf(
@@ -456,8 +456,8 @@ class CachedTimelineRemoteMediatorTest {
 
         val result = runBlocking { remoteMediator.load(LoadType.REFRESH, state) }
 
-        assertTrue(result is RemoteMediator.MediatorResult.Success)
-        assertFalse((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
+        assertThat(result).isInstanceOf(RemoteMediator.MediatorResult.Success::class)
+        assertThat((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached).isEqualTo(false)
 
         db.assertStatuses(
             listOf(
@@ -508,8 +508,8 @@ class CachedTimelineRemoteMediatorTest {
 
         val result = runBlocking { remoteMediator.load(LoadType.APPEND, state) }
 
-        assertTrue(result is RemoteMediator.MediatorResult.Success)
-        assertEquals(false, (result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
+        assertThat(result).isInstanceOf(RemoteMediator.MediatorResult.Success::class)
+        assertThat((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached).isEqualTo(false)
         db.assertStatuses(
             listOf(
                 mockStatusEntityWithAccount("8"),
@@ -560,13 +560,13 @@ class CachedTimelineRemoteMediatorTest {
 
         val loadedStatuses = (loadResult as PagingSource.LoadResult.Page).data
 
-        assertEquals(expected.size, loadedStatuses.size)
+        assertThat(loadedStatuses.size).isEqualTo(expected.size)
 
         for ((exp, prov) in expected.zip(loadedStatuses)) {
-            assertEquals(exp.status, prov.status)
+            assertThat(exp.status).isEqualTo(prov.status)
             if (!exp.status.isPlaceholder) {
-                assertEquals(exp.account, prov.account)
-                assertEquals(exp.reblogAccount, prov.reblogAccount)
+                assertThat(exp.account).isEqualTo(prov.account)
+                assertThat(exp.reblogAccount).isEqualTo(prov.reblogAccount)
             }
         }
     }

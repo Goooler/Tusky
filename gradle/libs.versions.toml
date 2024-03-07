@@ -46,7 +46,6 @@ retrofit = "2.9.0"
 robolectric = "4.11.1"
 sparkbutton = "4.2.0"
 touchimageview = "3.6"
-truth = "1.4.2"
 turbine = "1.0.0"
 unified-push = "2.4.0"
 xmlwriter = "1.0.4"
@@ -131,7 +130,7 @@ retrofit-core = { module = "com.squareup.retrofit2:retrofit", version.ref = "ret
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 sparkbutton = { module = "at.connyduck.sparkbutton:sparkbutton", version.ref = "sparkbutton" }
 touchimageview = { module = "com.github.MikeOrtiz:TouchImageView", version.ref = "touchimageview" }
-truth = { module = "com.google.truth:truth", version.ref = "truth" }
+assertk = "com.willowtreeapps.assertk:assertk:0.28.0"
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 unified-push = { module = "com.github.UnifiedPush:android-connector", version.ref = "unified-push" }
 xmlwriter = { module = "org.pageseeder.xmlwriter:pso-xmlwriter", version.ref = "xmlwriter" }

@@ -21,6 +21,10 @@ import android.content.Intent
 import android.os.Looper.getMainLooper
 import android.widget.EditText
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isTrue
 import at.connyduck.calladapter.networkresult.NetworkResult
 import com.google.gson.Gson
 import com.keylesspalace.tusky.R
@@ -40,9 +44,6 @@ import com.keylesspalace.tusky.network.MastodonApi
 import java.util.Locale
 import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -162,14 +163,14 @@ class ComposeActivityTest {
     @Test
     fun whenCloseButtonPressedAndEmpty_finish() {
         clickUp()
-        assertTrue(activity.isFinishing)
+        assertThat(activity.isFinishing).isTrue()
     }
 
     @Test
     fun whenCloseButtonPressedNotEmpty_notFinish() {
         insertSomeTextInContent()
         clickUp()
-        assertFalse(activity.isFinishing)
+        assertThat(activity.isFinishing).isTrue()
         // We would like to check for dialog but Robolectric doesn't work with AppCompat v7 yet
     }
 
@@ -178,20 +179,20 @@ class ComposeActivityTest {
         composeOptions = ComposeActivity.ComposeOptions(modifiedInitialState = true)
         setupActivity()
         clickUp()
-        assertFalse(activity.isFinishing)
+        assertThat(activity.isFinishing).isFalse()
     }
 
     @Test
     fun whenBackButtonPressedAndEmpty_finish() {
         clickBack()
-        assertTrue(activity.isFinishing)
+        assertThat(activity.isFinishing).isTrue()
     }
 
     @Test
     fun whenBackButtonPressedNotEmpty_notFinish() {
         insertSomeTextInContent()
         clickBack()
-        assertFalse(activity.isFinishing)
+        assertThat(activity.isFinishing).isFalse()
         // We would like to check for dialog but Robolectric doesn't work with AppCompat v7 yet
     }
 
@@ -200,14 +201,14 @@ class ComposeActivityTest {
         composeOptions = ComposeActivity.ComposeOptions(modifiedInitialState = true)
         setupActivity()
         clickBack()
-        assertFalse(activity.isFinishing)
+        assertThat(activity.isFinishing).isFalse()
     }
 
     @Test
     fun whenMaximumTootCharsIsNull_defaultLimitIsUsed() {
         instanceV1ResponseCallback = { getInstanceV1WithCustomConfiguration(null) }
         setupActivity()
-        assertEquals(InstanceInfoRepository.DEFAULT_CHARACTER_LIMIT, activity.maximumTootCharacters)
+        assertThat(activity.maximumTootCharacters).isEqualTo(InstanceInfoRepository.DEFAULT_CHARACTER_LIMIT)
     }
 
     @Test
@@ -216,7 +217,7 @@ class ComposeActivityTest {
         instanceResponseCallback = { getInstanceWithCustomConfiguration(customMaximum) }
         setupActivity()
         shadowOf(getMainLooper()).idle()
-        assertEquals(customMaximum, activity.maximumTootCharacters)
+        assertThat(activity.maximumTootCharacters).isEqualTo(customMaximum)
     }
 
     @Test
@@ -225,7 +226,7 @@ class ComposeActivityTest {
         instanceV1ResponseCallback = { getInstanceV1WithCustomConfiguration(customMaximum) }
         setupActivity()
         shadowOf(getMainLooper()).idle()
-        assertEquals(customMaximum, activity.maximumTootCharacters)
+        assertThat(activity.maximumTootCharacters).isEqualTo(customMaximum)
     }
 
     @Test
@@ -234,7 +235,7 @@ class ComposeActivityTest {
         instanceV1ResponseCallback = { getInstanceV1WithCustomConfiguration(null, getCustomInstanceConfiguration(maximumStatusCharacters = customMaximum)) }
         setupActivity()
         shadowOf(getMainLooper()).idle()
-        assertEquals(customMaximum, activity.maximumTootCharacters)
+        assertThat(activity.maximumTootCharacters).isEqualTo(customMaximum)
     }
 
     @Test
@@ -243,28 +244,29 @@ class ComposeActivityTest {
         instanceV1ResponseCallback = { getInstanceV1WithCustomConfiguration(customMaximum, getCustomInstanceConfiguration(maximumStatusCharacters = customMaximum * 2)) }
         setupActivity()
         shadowOf(getMainLooper()).idle()
-        assertEquals(customMaximum * 2, activity.maximumTootCharacters)
+        assertThat(activity.maximumTootCharacters).isEqualTo(customMaximum * 2)
     }
 
     @Test
     fun whenTextContainsNoUrl_everyCharacterIsCounted() {
         val content = "This is test content please ignore thx "
         insertSomeTextInContent(content)
-        assertEquals(content.length, activity.calculateTextLength())
+        assertThat(activity.calculateTextLength()).isEqualTo(content.length)
     }
 
     @Test
     fun whenTextContainsEmoji_emojisAreCountedAsOneCharacter() {
         val content = "Test 😜"
         insertSomeTextInContent(content)
-        assertEquals(6, activity.calculateTextLength())
+        assertThat(activity.calculateTextLength()).isEqualTo(6)
     }
 
     @Test
     fun whenTextContainsUrlWithEmoji_ellipsizedUrlIsCountedCorrectly() {
         val content = "https://🤪.com"
         insertSomeTextInContent(content)
-        assertEquals(InstanceInfoRepository.DEFAULT_CHARACTERS_RESERVED_PER_URL, activity.calculateTextLength())
+        assertThat(activity.calculateTextLength())
+            .isEqualTo(InstanceInfoRepository.DEFAULT_CHARACTERS_RESERVED_PER_URL)
     }
 
     @Test
@@ -272,7 +274,8 @@ class ComposeActivityTest {
         val url = "https://www.google.dk/search?biw=1920&bih=990&tbm=isch&sa=1&ei=bmDrWuOoKMv6kwWOkIaoDQ&q=indiana+jones+i+hate+snakes+animated&oq=indiana+jones+i+hate+snakes+animated&gs_l=psy-ab.3...54174.55443.0.55553.9.7.0.0.0.0.255.333.1j0j1.2.0....0...1c.1.64.psy-ab..7.0.0....0.40G-kcDkC6A#imgdii=PSp15hQjN1JqvM:&imgrc=H0hyE2JW5wrpBM:"
         val additionalContent = "Check out this @image #search result: "
         insertSomeTextInContent(additionalContent + url)
-        assertEquals(additionalContent.length + InstanceInfoRepository.DEFAULT_CHARACTERS_RESERVED_PER_URL, activity.calculateTextLength())
+        assertThat(activity.calculateTextLength())
+            .isEqualTo(additionalContent.length + InstanceInfoRepository.DEFAULT_CHARACTERS_RESERVED_PER_URL)
     }
 
     @Test
@@ -281,7 +284,8 @@ class ComposeActivityTest {
         val url = "https://www.google.dk/search?biw=1920&bih=990&tbm=isch&sa=1&ei=bmDrWuOoKMv6kwWOkIaoDQ&q=indiana+jones+i+hate+snakes+animated&oq=indiana+jones+i+hate+snakes+animated&gs_l=psy-ab.3...54174.55443.0.55553.9.7.0.0.0.0.255.333.1j0j1.2.0....0...1c.1.64.psy-ab..7.0.0....0.40G-kcDkC6A#imgdii=PSp15hQjN1JqvM:&imgrc=H0hyE2JW5wrpBM:"
         val additionalContent = " Check out this @image #search result: "
         insertSomeTextInContent(shortUrl + additionalContent + url)
-        assertEquals(additionalContent.length + (InstanceInfoRepository.DEFAULT_CHARACTERS_RESERVED_PER_URL * 2), activity.calculateTextLength())
+        assertThat(activity.calculateTextLength())
+            .isEqualTo(additionalContent.length + (InstanceInfoRepository.DEFAULT_CHARACTERS_RESERVED_PER_URL * 2))
     }
 
     @Test
@@ -289,7 +293,8 @@ class ComposeActivityTest {
         val url = "https://www.google.dk/search?biw=1920&bih=990&tbm=isch&sa=1&ei=bmDrWuOoKMv6kwWOkIaoDQ&q=indiana+jones+i+hate+snakes+animated&oq=indiana+jones+i+hate+snakes+animated&gs_l=psy-ab.3...54174.55443.0.55553.9.7.0.0.0.0.255.333.1j0j1.2.0....0...1c.1.64.psy-ab..7.0.0....0.40G-kcDkC6A#imgdii=PSp15hQjN1JqvM:&imgrc=H0hyE2JW5wrpBM:"
         val additionalContent = " Check out this @image #search result: "
         insertSomeTextInContent(url + additionalContent + url)
-        assertEquals(additionalContent.length + (InstanceInfoRepository.DEFAULT_CHARACTERS_RESERVED_PER_URL * 2), activity.calculateTextLength())
+        assertThat(activity.calculateTextLength())
+            .isEqualTo(additionalContent.length + (InstanceInfoRepository.DEFAULT_CHARACTERS_RESERVED_PER_URL * 2))
     }
 
     @Test
@@ -301,7 +306,8 @@ class ComposeActivityTest {
         setupActivity()
         shadowOf(getMainLooper()).idle()
         insertSomeTextInContent(additionalContent + url)
-        assertEquals(additionalContent.length + customUrlLength, activity.calculateTextLength())
+        assertThat(activity.calculateTextLength())
+            .isEqualTo(additionalContent.length + customUrlLength)
     }
 
     @Test
@@ -313,7 +319,8 @@ class ComposeActivityTest {
         setupActivity()
         shadowOf(getMainLooper()).idle()
         insertSomeTextInContent(additionalContent + url)
-        assertEquals(additionalContent.length + customUrlLength, activity.calculateTextLength())
+        assertThat(activity.calculateTextLength())
+            .isEqualTo(additionalContent.length + customUrlLength)
     }
 
     @Test
@@ -326,7 +333,7 @@ class ComposeActivityTest {
         setupActivity()
         shadowOf(getMainLooper()).idle()
         insertSomeTextInContent(shortUrl + additionalContent + url)
-        assertEquals(additionalContent.length + (customUrlLength * 2), activity.calculateTextLength())
+        assertThat(activity.calculateTextLength()).isEqualTo(additionalContent.length + (customUrlLength * 2))
     }
 
     @Test
@@ -339,7 +346,7 @@ class ComposeActivityTest {
         setupActivity()
         shadowOf(getMainLooper()).idle()
         insertSomeTextInContent(shortUrl + additionalContent + url)
-        assertEquals(additionalContent.length + (customUrlLength * 2), activity.calculateTextLength())
+        assertThat(activity.calculateTextLength()).isEqualTo(additionalContent.length + (customUrlLength * 2))
     }
 
     @Test
@@ -351,7 +358,7 @@ class ComposeActivityTest {
         setupActivity()
         shadowOf(getMainLooper()).idle()
         insertSomeTextInContent(url + additionalContent + url)
-        assertEquals(additionalContent.length + (customUrlLength * 2), activity.calculateTextLength())
+        assertThat(activity.calculateTextLength()).isEqualTo(additionalContent.length + (customUrlLength * 2))
     }
 
     @Test
@@ -363,7 +370,7 @@ class ComposeActivityTest {
         setupActivity()
         shadowOf(getMainLooper()).idle()
         insertSomeTextInContent(url + additionalContent + url)
-        assertEquals(additionalContent.length + (customUrlLength * 2), activity.calculateTextLength())
+        assertThat(activity.calculateTextLength()).isEqualTo(additionalContent.length + (customUrlLength * 2))
     }
 
     @Test
@@ -376,11 +383,12 @@ class ComposeActivityTest {
             editor.setSelection(caretIndex)
             activity.prependSelectedWordsWith(insertText)
             // Text should be inserted at caret
-            assertEquals("Unexpected value at $caretIndex", insertText, editor.text.substring(caretIndex, caretIndex + insertText.length))
+            assertThat(editor.text.substring(caretIndex, caretIndex + insertText.length))
+                .isEqualTo("Unexpected value at $caretIndex")
 
             // Caret should be placed after inserted text
-            assertEquals(caretIndex + insertText.length, editor.selectionStart)
-            assertEquals(caretIndex + insertText.length, editor.selectionEnd)
+            assertThat(editor.selectionStart).isEqualTo(caretIndex + insertText.length)
+            assertThat(editor.selectionEnd).isEqualTo(caretIndex + insertText.length)
         }
     }
 
@@ -396,9 +404,9 @@ class ComposeActivityTest {
         activity.prependSelectedWordsWith(insertText)
 
         // Text and selection should be unmodified
-        assertEquals(originalText, editor.text.toString())
-        assertEquals(selectionStart, editor.selectionStart)
-        assertEquals(selectionEnd, editor.selectionEnd)
+        assertThat(editor.text.toString()).isEqualTo(originalText)
+        assertThat(editor.selectionStart).isEqualTo(selectionStart)
+        assertThat(editor.selectionEnd).isEqualTo(selectionEnd)
     }
 
     @Test
@@ -414,11 +422,11 @@ class ComposeActivityTest {
         activity.prependSelectedWordsWith(insertText)
 
         // text should be inserted at word starts inside selection
-        assertEquals("one #two #three #four", editor.text.toString())
+        assertThat(editor.text.toString()).isEqualTo("one #two #three #four")
 
         // selection should be expanded accordingly
-        assertEquals(selectionStart, editor.selectionStart)
-        assertEquals(modifiedSelectionEnd, editor.selectionEnd)
+        assertThat(editor.selectionStart).isEqualTo(selectionStart)
+        assertThat(editor.selectionEnd).isEqualTo(modifiedSelectionEnd)
     }
 
     @Test
@@ -433,9 +441,9 @@ class ComposeActivityTest {
         activity.prependSelectedWordsWith(insertText)
 
         // Text and selection should be unmodified
-        assertEquals(originalText, editor.text.toString())
-        assertEquals(selectionStart, editor.selectionStart)
-        assertEquals(selectionEnd, editor.selectionEnd)
+        assertThat(editor.text.toString()).isEqualTo(originalText)
+        assertThat(editor.selectionStart).isEqualTo(selectionStart)
+        assertThat(editor.selectionEnd).isEqualTo(selectionEnd)
     }
 
     @Test
@@ -453,8 +461,8 @@ class ComposeActivityTest {
         assert(editor.text.startsWith(insertText))
 
         // selection should be expanded accordingly
-        assertEquals(selectionStart, editor.selectionStart)
-        assertEquals(selectionEnd + insertText.length, editor.selectionEnd)
+        assertThat(editor.selectionStart).isEqualTo(selectionStart)
+        assertThat(editor.selectionEnd).isEqualTo(selectionEnd + insertText.length)
     }
 
     @Test
@@ -469,9 +477,9 @@ class ComposeActivityTest {
         activity.prependSelectedWordsWith(insertText)
 
         // Text and selection should be unmodified
-        assertEquals(originalText, editor.text.toString())
-        assertEquals(selectionStart, editor.selectionStart)
-        assertEquals(selectionEnd, editor.selectionEnd)
+        assertThat(editor.text.toString()).isEqualTo(originalText)
+        assertThat(editor.selectionStart).isEqualTo(selectionStart)
+        assertThat(editor.selectionEnd).isEqualTo(selectionEnd)
     }
 
     @Test
@@ -486,11 +494,11 @@ class ComposeActivityTest {
         activity.prependSelectedWordsWith(insertText)
 
         // Text is prepended
-        assertEquals("Some #text", editor.text.toString())
+        assertThat(editor.text.toString()).isEqualTo("Some #text")
 
         // Selection is expanded accordingly
-        assertEquals(selectionStart, editor.selectionStart)
-        assertEquals(selectionEnd + insertText.length, editor.selectionEnd)
+        assertThat(editor.selectionStart).isEqualTo(selectionStart)
+        assertThat(editor.selectionEnd).isEqualTo(selectionEnd + insertText.length)
     }
 
     @Test
@@ -505,16 +513,16 @@ class ComposeActivityTest {
         activity.prependSelectedWordsWith(insertText)
 
         // Text is prepended
-        assertEquals("Some #text", editor.text.toString())
+        assertThat(editor.text.toString()).isEqualTo("Some #text")
 
         // Selection is expanded accordingly
-        assertEquals(selectionStart, editor.selectionStart)
-        assertEquals(selectionEnd + insertText.length, editor.selectionEnd)
+        assertThat(editor.selectionStart).isEqualTo(selectionStart)
+        assertThat(editor.selectionEnd).isEqualTo(selectionEnd + insertText.length)
     }
 
     @Test
     fun whenNoLanguageIsGiven_defaultLanguageIsSelected() {
-        assertEquals(Locale.getDefault().language, activity.selectedLanguage)
+        assertThat(activity.selectedLanguage).isEqualTo(Locale.getDefault().language)
     }
 
     @Test
@@ -522,7 +530,7 @@ class ComposeActivityTest {
         val language = "no"
         composeOptions = ComposeActivity.ComposeOptions(language = language)
         setupActivity()
-        assertEquals(language, activity.selectedLanguage)
+        assertThat(activity.selectedLanguage).isEqualTo(language)
     }
 
     @Test
@@ -531,7 +539,7 @@ class ComposeActivityTest {
         // "ji" was deprecated in favor of "yi"
         composeOptions = ComposeActivity.ComposeOptions(language = "ji")
         setupActivity()
-        assertEquals("yi", activity.selectedLanguage)
+        assertThat(activity.selectedLanguage).isEqualTo("yi")
     }
 
     @Test
@@ -539,7 +547,7 @@ class ComposeActivityTest {
         val language = "zzz"
         composeOptions = ComposeActivity.ComposeOptions(language = language)
         setupActivity()
-        assertEquals(language, activity.selectedLanguage)
+        assertThat(activity.selectedLanguage).isEqualTo(language)
     }
 
     @Test
@@ -548,7 +556,7 @@ class ComposeActivityTest {
         instanceResponseCallback = { getSampleFriendicaInstance() }
         setupActivity()
         shadowOf(getMainLooper()).idle()
-        assertEquals(FRIENDICA_MAXIMUM, activity.maximumTootCharacters)
+        assertThat(activity.maximumTootCharacters).isEqualTo(FRIENDICA_MAXIMUM)
     }
 
     private fun clickUp() {

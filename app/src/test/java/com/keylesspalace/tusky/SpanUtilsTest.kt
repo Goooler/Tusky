@@ -1,12 +1,16 @@
 package com.keylesspalace.tusky
 
 import android.text.Spannable
+import assertk.assertThat
+import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
 import com.keylesspalace.tusky.util.highlightSpans
-import org.junit.Assert
 import org.junit.Test
+import org.junit.experimental.runners.Enclosed
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 
+@RunWith(Enclosed::class)
 class SpanUtilsTest {
     @Test
     fun matchesMixedSpans() {
@@ -14,7 +18,7 @@ class SpanUtilsTest {
         val inputSpannable = FakeSpannable(input)
         highlightSpans(inputSpannable, 0xffffff)
         val spans = inputSpannable.spans
-        Assert.assertEquals(6, spans.size)
+        assertThat(spans.size).isEqualTo(6)
     }
 
     @Test
@@ -24,9 +28,9 @@ class SpanUtilsTest {
         val inputSpannable = FakeSpannable("$firstURL $secondURL")
         highlightSpans(inputSpannable, 0xffffff)
         val spans = inputSpannable.spans
-        Assert.assertEquals(2, spans.size)
-        Assert.assertEquals(firstURL.length, spans[0].end - spans[0].start)
-        Assert.assertEquals(secondURL.length, spans[1].end - spans[1].start)
+        assertThat(spans.size).isEqualTo(2)
+        assertThat(firstURL.length).isEqualTo(spans[0].end - spans[0].start)
+        assertThat(secondURL.length).isEqualTo(spans[1].end - spans[1].start)
     }
 
     @RunWith(Parameterized::class)
@@ -50,8 +54,8 @@ class SpanUtilsTest {
             val inputSpannable = FakeSpannable(thingToHighlight)
             highlightSpans(inputSpannable, 0xffffff)
             val spans = inputSpannable.spans
-            Assert.assertEquals(1, spans.size)
-            Assert.assertEquals(thingToHighlight.length, spans[0].end - spans[0].start)
+            assertThat(spans.size).isEqualTo(1)
+            assertThat(thingToHighlight.length).isEqualTo(spans[0].end - spans[0].start)
         }
 
         @Test
@@ -59,8 +63,8 @@ class SpanUtilsTest {
             val inputSpannable = FakeSpannable(" $thingToHighlight")
             highlightSpans(inputSpannable, 0xffffff)
             val spans = inputSpannable.spans
-            Assert.assertEquals(1, spans.size)
-            Assert.assertEquals(thingToHighlight.length, spans[0].end - spans[0].start)
+            assertThat(spans.size).isEqualTo(1)
+            assertThat(thingToHighlight.length).isEqualTo(spans[0].end - spans[0].start)
         }
 
         @Test
@@ -68,7 +72,7 @@ class SpanUtilsTest {
             val inputSpannable = FakeSpannable("aa${thingToHighlight}aa")
             highlightSpans(inputSpannable, 0xffffff)
             val spans = inputSpannable.spans
-            Assert.assertTrue(spans.isEmpty())
+            assertThat(spans).isEmpty()
         }
 
         @Test
@@ -76,7 +80,7 @@ class SpanUtilsTest {
             val inputSpannable = FakeSpannable("@aa${thingToHighlight}aa")
             highlightSpans(inputSpannable, 0xffffff)
             val spans = inputSpannable.spans
-            Assert.assertEquals(1, spans.size)
+            assertThat(spans.size).isEqualTo(1)
         }
 
         @Test
@@ -86,11 +90,11 @@ class SpanUtilsTest {
             val inputSpannable = FakeSpannable("$begin $thingToHighlight $end")
             highlightSpans(inputSpannable, 0xffffff)
             val spans = inputSpannable.spans
-            Assert.assertEquals(3, spans.size)
+            assertThat(spans.size).isEqualTo(3)
 
             val middleSpan = spans.single { span -> span.start > 0 && span.end < inputSpannable.lastIndex }
-            Assert.assertEquals(begin.length + 1, middleSpan.start)
-            Assert.assertEquals(inputSpannable.length - end.length - 1, middleSpan.end)
+            assertThat(begin.length + 1).isEqualTo(middleSpan.start)
+            assertThat(inputSpannable.length - end.length - 1).isEqualTo(middleSpan.end)
         }
     }
 
@@ -121,10 +125,10 @@ class SpanUtilsTest {
             val inputSpannable = FakeSpannable(text)
             highlightSpans(inputSpannable, 0xffffff)
             val spans = inputSpannable.spans
-            Assert.assertEquals(1, spans.size)
+            assertThat(spans.size).isEqualTo(1)
             val span = spans.first()
-            Assert.assertEquals(expectedStartIndex, span.start)
-            Assert.assertEquals(expectedEndIndex, span.end)
+            assertThat(span.span).isEqualTo(expectedStartIndex)
+            assertThat(span.end).isEqualTo(expectedEndIndex)
         }
     }
 

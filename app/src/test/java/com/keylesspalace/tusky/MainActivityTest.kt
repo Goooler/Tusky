@@ -8,6 +8,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.viewpager2.widget.ViewPager2
 import androidx.work.testing.WorkManagerTestInitHelper
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
 import at.connyduck.calladapter.networkresult.NetworkResult
 import com.keylesspalace.tusky.appstore.EventHub
 import com.keylesspalace.tusky.components.accountlist.AccountListActivity
@@ -18,8 +21,6 @@ import com.keylesspalace.tusky.entity.Notification
 import com.keylesspalace.tusky.entity.TimelineAccount
 import java.util.Date
 import kotlinx.coroutines.test.TestScope
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -69,7 +70,7 @@ class MainActivityTest {
 
         val notificationTab = defaultTabs().indexOfFirst { it.id == NOTIFICATIONS }
 
-        assertEquals(currentTab, notificationTab)
+        assertThat(currentTab).isEqualTo(notificationTab)
     }
 
     @Test
@@ -79,9 +80,9 @@ class MainActivityTest {
         val activity = startMainActivity(intent)
         val nextActivity = shadowOf(activity).peekNextStartedActivity()
 
-        assertNotNull(nextActivity)
-        assertEquals(ComponentName(context, AccountListActivity::class.java.name), nextActivity.component)
-        assertEquals(AccountListActivity.Type.FOLLOW_REQUESTS, nextActivity.getSerializableExtra("type"))
+        assertThat(nextActivity).isNotNull()
+        assertThat(nextActivity.component).isEqualTo(ComponentName(context, AccountListActivity::class.java.name))
+        assertThat(nextActivity.getSerializableExtra("type")).isEqualTo(AccountListActivity.Type.FOLLOW_REQUESTS)
     }
 
     private fun showNotification(type: Notification.Type): Intent {

@@ -16,6 +16,11 @@
 package com.keylesspalace.tusky
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isNull
+import assertk.assertions.isTrue
 import at.connyduck.calladapter.networkresult.NetworkResult
 import com.keylesspalace.tusky.entity.SearchResult
 import com.keylesspalace.tusky.entity.Status
@@ -29,9 +34,6 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -113,7 +115,7 @@ class BottomSheetActivityTest {
     @Test
     fun beginEndSearch_setIsSearching_isSearchingAfterBegin() {
         activity.onBeginSearch("https://mastodon.foo.bar/@User")
-        assertTrue(activity.isSearching())
+        assertThat(activity.isSearching()).isTrue()
     }
 
     @Test
@@ -121,7 +123,7 @@ class BottomSheetActivityTest {
         val validUrl = "https://mastodon.foo.bar/@User"
         activity.onBeginSearch(validUrl)
         activity.onEndSearch(validUrl)
-        assertFalse(activity.isSearching())
+        assertThat(activity.isSearching()).isFalse()
     }
 
     @Test
@@ -131,7 +133,7 @@ class BottomSheetActivityTest {
 
         activity.onBeginSearch(validUrl)
         activity.onEndSearch(invalidUrl)
-        assertTrue(activity.isSearching())
+        assertThat(activity.isSearching()).isTrue()
     }
 
     @Test
@@ -140,7 +142,7 @@ class BottomSheetActivityTest {
 
         activity.onBeginSearch(url)
         activity.cancelActiveSearch()
-        assertFalse(activity.isSearching())
+        assertThat(activity.isSearching()).isFalse()
     }
 
     @Test
@@ -152,8 +154,8 @@ class BottomSheetActivityTest {
         activity.cancelActiveSearch()
 
         activity.onBeginSearch(secondUrl)
-        assertTrue(activity.getCancelSearchRequested(firstUrl))
-        assertFalse(activity.getCancelSearchRequested(secondUrl))
+        assertThat(activity.getCancelSearchRequested(firstUrl)).isTrue()
+        assertThat(activity.getCancelSearchRequested(secondUrl)).isFalse()
     }
 
     @Test
@@ -162,7 +164,7 @@ class BottomSheetActivityTest {
         try {
             activity.viewUrl(accountQuery)
             testScheduler.advanceTimeBy(100.milliseconds)
-            assertEquals(account.id, activity.accountId)
+            assertThat(activity.accountId).isEqualTo(account.id)
         } finally {
             Dispatchers.resetMain()
         }
@@ -174,7 +176,7 @@ class BottomSheetActivityTest {
         try {
             activity.viewUrl(statusQuery)
             testScheduler.advanceTimeBy(100.milliseconds)
-            assertEquals(status.id, activity.statusId)
+            assertThat(activity.statusId).isEqualTo(status.id)
         } finally {
             Dispatchers.resetMain()
         }
@@ -186,7 +188,7 @@ class BottomSheetActivityTest {
         try {
             activity.viewUrl(nonMastodonQuery)
             testScheduler.advanceTimeBy(100.milliseconds)
-            assertEquals(nonMastodonQuery, activity.link)
+            assertThat(activity.link).isEqualTo(nonMastodonQuery)
         } finally {
             Dispatchers.resetMain()
         }
@@ -202,8 +204,8 @@ class BottomSheetActivityTest {
             )) {
                 activity.viewUrl(nonMastodonQuery, fallbackBehavior)
                 testScheduler.advanceTimeBy(100.milliseconds)
-                assertEquals(nonMastodonQuery, activity.link)
-                assertEquals(fallbackBehavior, activity.fallbackBehavior)
+                assertThat(activity.link).isEqualTo(nonMastodonQuery)
+                assertThat(activity.fallbackBehavior).isEqualTo(fallbackBehavior)
             }
         } finally {
             Dispatchers.resetMain()
@@ -216,8 +218,8 @@ class BottomSheetActivityTest {
         try {
             activity.viewUrl(nonexistentStatusQuery)
             testScheduler.advanceTimeBy(100.milliseconds)
-            assertEquals(nonexistentStatusQuery, activity.link)
-            assertEquals(null, activity.accountId)
+            assertThat(activity.link).isEqualTo(nonexistentStatusQuery)
+            assertThat(activity.fallbackBehavior).isNull()
         } finally {
             Dispatchers.resetMain()
         }
@@ -228,10 +230,10 @@ class BottomSheetActivityTest {
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
         try {
             activity.viewUrl(accountQuery)
-            assertTrue(activity.isSearching())
+            assertThat(activity.isSearching()).isTrue()
             activity.cancelActiveSearch()
-            assertFalse(activity.isSearching())
-            assertEquals(null, activity.accountId)
+            assertThat(activity.isSearching()).isFalse()
+            assertThat(activity.accountId).isNull()
         } finally {
             Dispatchers.resetMain()
         }
@@ -243,7 +245,7 @@ class BottomSheetActivityTest {
         try {
             activity.viewUrl(accountQuery)
             activity.cancelActiveSearch()
-            assertEquals(null, activity.accountId)
+            assertThat(activity.searchUrl).isNull()
         } finally {
             Dispatchers.resetMain()
         }
@@ -255,7 +257,7 @@ class BottomSheetActivityTest {
         try {
             activity.viewUrl(nonMastodonQuery)
             activity.cancelActiveSearch()
-            assertEquals(null, activity.searchUrl)
+            assertThat(activity.searchUrl).isNull()
         } finally {
             Dispatchers.resetMain()
         }
@@ -273,15 +275,15 @@ class BottomSheetActivityTest {
             activity.viewUrl(statusQuery)
 
             // ensure that search is still ongoing
-            assertTrue(activity.isSearching())
+            assertThat(activity.isSearching()).isTrue()
 
             // return searchResults
             testScheduler.advanceTimeBy(100.milliseconds)
 
             // ensure that the result of the status search was recorded
             // and the account search wasn't
-            assertEquals(status.id, activity.statusId)
-            assertEquals(null, activity.accountId)
+            assertThat(activity.statusId).isEqualTo(status.id)
+            assertThat(activity.accountId).isNull()
         } finally {
             Dispatchers.resetMain()
         }
