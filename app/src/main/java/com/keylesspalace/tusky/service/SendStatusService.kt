@@ -102,7 +102,7 @@ class SendStatusService : Service(), Injectable {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         if (intent.hasExtra(KEY_STATUS)) {
             val statusToSend: StatusToSend = IntentCompat.getParcelableExtra(intent, KEY_STATUS, StatusToSend::class.java)
-                ?: throw IllegalStateException("SendStatusService started without $KEY_STATUS extra")
+                ?: error("SendStatusService started without $KEY_STATUS extra")
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val channel =

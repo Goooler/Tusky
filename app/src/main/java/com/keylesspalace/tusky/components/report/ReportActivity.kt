@@ -48,9 +48,7 @@ class ReportActivity : BottomSheetActivity(), HasAndroidInjector {
         val accountId = intent?.getStringExtra(ACCOUNT_ID)
         val accountUserName = intent?.getStringExtra(ACCOUNT_USERNAME)
         if (accountId.isNullOrBlank() || accountUserName.isNullOrBlank()) {
-            throw IllegalStateException(
-                "accountId ($accountId) or accountUserName ($accountUserName) is null"
-            )
+            error("accountId ($accountId) or accountUserName ($accountUserName) is null")
         }
 
         viewModel.init(accountId, accountUserName, intent?.getStringExtra(STATUS_ID))

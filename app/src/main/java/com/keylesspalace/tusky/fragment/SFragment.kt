@@ -102,7 +102,7 @@ abstract class SFragment : Fragment(), Injectable {
         bottomSheetActivity = if (context is BottomSheetActivity) {
             context
         } else {
-            throw IllegalStateException("Fragment must be attached to a BottomSheetActivity!")
+            error("Fragment must be attached to a BottomSheetActivity!")
         }
     }
 

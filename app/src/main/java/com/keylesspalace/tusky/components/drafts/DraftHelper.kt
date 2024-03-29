@@ -97,7 +97,7 @@ class DraftHelper @Inject constructor(
                 "video" -> DraftAttachment.Type.VIDEO
                 "image" -> DraftAttachment.Type.IMAGE
                 "audio" -> DraftAttachment.Type.AUDIO
-                else -> throw IllegalStateException("unknown media type")
+                else -> error("unknown media type")
             }
         }
 
