@@ -22,6 +22,8 @@ import java.util.LinkedHashSet
 
 /**
  * @return true if list is null or else return list.isEmpty()
+ *
+ * TODO: remove this after invocations in Java code are migrated to Kotlin.
  */
 fun isEmpty(list: List<*>?): Boolean {
     return list == null || list.isEmpty()
