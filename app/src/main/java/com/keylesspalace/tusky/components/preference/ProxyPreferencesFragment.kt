@@ -27,7 +27,7 @@ import com.keylesspalace.tusky.settings.makePreferenceScreen
 import com.keylesspalace.tusky.settings.preferenceCategory
 import com.keylesspalace.tusky.settings.switchPreference
 import com.keylesspalace.tusky.settings.validatedEditTextPreference
-import com.keylesspalace.tusky.util.getNonNullString
+import com.keylesspalace.tusky.util.requireString
 import kotlin.system.exitProcess
 
 class ProxyPreferencesFragment : PreferenceFragmentCompat() {
@@ -96,9 +96,9 @@ class ProxyPreferencesFragment : PreferenceFragmentCompat() {
 
             val missing = preference.context.getString(R.string.pref_summary_http_proxy_missing)
 
-            val server = sharedPreferences.getNonNullString(PrefKeys.HTTP_PROXY_SERVER, missing)
+            val server = sharedPreferences.requireString(PrefKeys.HTTP_PROXY_SERVER, missing)
             val port = try {
-                sharedPreferences.getNonNullString(PrefKeys.HTTP_PROXY_PORT, "-1").toInt()
+                sharedPreferences.requireString(PrefKeys.HTTP_PROXY_PORT, "-1").toInt()
             } catch (e: NumberFormatException) {
                 -1
             }

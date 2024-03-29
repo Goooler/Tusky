@@ -37,7 +37,7 @@ import com.keylesspalace.tusky.databinding.ActivityLoginBinding
 import com.keylesspalace.tusky.di.Injectable
 import com.keylesspalace.tusky.entity.AccessToken
 import com.keylesspalace.tusky.network.MastodonApi
-import com.keylesspalace.tusky.util.getNonNullString
+import com.keylesspalace.tusky.util.requireString
 import com.keylesspalace.tusky.util.openLinkInCustomTab
 import com.keylesspalace.tusky.util.rickRoll
 import com.keylesspalace.tusky.util.shouldRickRoll
@@ -234,9 +234,9 @@ class LoginActivity : BaseActivity(), Injectable {
             val error = uri.getQueryParameter("error")
 
             /* restore variables from SharedPreferences */
-            val domain = preferences.getNonNullString(DOMAIN, "")
-            val clientId = preferences.getNonNullString(CLIENT_ID, "")
-            val clientSecret = preferences.getNonNullString(CLIENT_SECRET, "")
+            val domain = preferences.requireString(DOMAIN, "")
+            val clientId = preferences.requireString(CLIENT_ID, "")
+            val clientSecret = preferences.requireString(CLIENT_SECRET, "")
 
             if (code != null && domain.isNotEmpty() && clientId.isNotEmpty() && clientSecret.isNotEmpty()) {
                 lifecycleScope.launch {
@@ -268,9 +268,9 @@ class LoginActivity : BaseActivity(), Injectable {
 
     private suspend fun fetchOauthToken(code: String) {
         /* restore variables from SharedPreferences */
-        val domain = preferences.getNonNullString(DOMAIN, "")
-        val clientId = preferences.getNonNullString(CLIENT_ID, "")
-        val clientSecret = preferences.getNonNullString(CLIENT_SECRET, "")
+        val domain = preferences.requireString(DOMAIN, "")
+        val clientId = preferences.requireString(CLIENT_ID, "")
+        val clientSecret = preferences.requireString(CLIENT_SECRET, "")
 
         setLoading(true)
 

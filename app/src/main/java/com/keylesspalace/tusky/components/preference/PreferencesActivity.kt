@@ -36,7 +36,7 @@ import com.keylesspalace.tusky.databinding.ActivityPreferencesBinding
 import com.keylesspalace.tusky.settings.AppTheme
 import com.keylesspalace.tusky.settings.PrefKeys
 import com.keylesspalace.tusky.settings.PrefKeys.APP_THEME
-import com.keylesspalace.tusky.util.getNonNullString
+import com.keylesspalace.tusky.util.requireString
 import com.keylesspalace.tusky.util.setAppNightMode
 import com.keylesspalace.tusky.util.startActivityWithSlideInAnimation
 import dagger.android.DispatchingAndroidInjector
@@ -150,7 +150,7 @@ class PreferencesActivity :
         key ?: return
         when (key) {
             APP_THEME -> {
-                val theme = sharedPreferences.getNonNullString(APP_THEME, AppTheme.DEFAULT.value)
+                val theme = sharedPreferences.requireString(APP_THEME, AppTheme.DEFAULT.value)
                 Log.d("activeTheme", theme)
                 setAppNightMode(theme)
 

@@ -32,7 +32,7 @@ import com.keylesspalace.tusky.settings.PrefKeys.HTTP_PROXY_ENABLED
 import com.keylesspalace.tusky.settings.PrefKeys.HTTP_PROXY_PORT
 import com.keylesspalace.tusky.settings.PrefKeys.HTTP_PROXY_SERVER
 import com.keylesspalace.tusky.settings.ProxyConfiguration
-import com.keylesspalace.tusky.util.getNonNullString
+import com.keylesspalace.tusky.util.requireString
 import dagger.Module
 import dagger.Provides
 import java.net.IDN
@@ -70,8 +70,8 @@ class NetworkModule {
         preferences: SharedPreferences
     ): OkHttpClient {
         val httpProxyEnabled = preferences.getBoolean(HTTP_PROXY_ENABLED, false)
-        val httpServer = preferences.getNonNullString(HTTP_PROXY_SERVER, "")
-        val httpPort = preferences.getNonNullString(HTTP_PROXY_PORT, "-1").toIntOrNull() ?: -1
+        val httpServer = preferences.requireString(HTTP_PROXY_SERVER, "")
+        val httpPort = preferences.requireString(HTTP_PROXY_PORT, "-1").toIntOrNull() ?: -1
         val cacheSize = 25 * 1024 * 1024L // 25 MiB
         val builder = OkHttpClient.Builder()
             .addInterceptor { chain ->

@@ -35,7 +35,7 @@ class LocaleManager @Inject constructor(
     private var prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     fun setLocale() {
-        val language = prefs.getNonNullString(PrefKeys.LANGUAGE, DEFAULT)
+        val language = prefs.requireString(PrefKeys.LANGUAGE, DEFAULT)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (language != HANDLED_BY_SYSTEM) {
@@ -83,7 +83,7 @@ class LocaleManager @Inject constructor(
                     }
             }
         } else {
-            prefs.getNonNullString(PrefKeys.LANGUAGE, DEFAULT)
+            prefs.requireString(PrefKeys.LANGUAGE, DEFAULT)
         }
     }
 
