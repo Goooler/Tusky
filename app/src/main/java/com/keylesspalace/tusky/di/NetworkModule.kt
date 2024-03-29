@@ -70,7 +70,7 @@ class NetworkModule {
         preferences: SharedPreferences
     ): OkHttpClient {
         val httpProxyEnabled = preferences.getBoolean(HTTP_PROXY_ENABLED, false)
-        val httpServer = preferences.requireString(HTTP_PROXY_SERVER, "")
+        val httpServer = preferences.requireString(HTTP_PROXY_SERVER)
         val httpPort = preferences.requireString(HTTP_PROXY_PORT, "-1").toIntOrNull() ?: -1
         val cacheSize = 25 * 1024 * 1024L // 25 MiB
         val builder = OkHttpClient.Builder()
