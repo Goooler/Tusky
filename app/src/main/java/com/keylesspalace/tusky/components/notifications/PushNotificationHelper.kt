@@ -34,6 +34,7 @@ import com.keylesspalace.tusky.db.AccountManager
 import com.keylesspalace.tusky.entity.Notification
 import com.keylesspalace.tusky.network.MastodonApi
 import com.keylesspalace.tusky.util.CryptoUtil
+import com.keylesspalace.tusky.util.requireSystemService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.unifiedpush.android.connector.UnifiedPush
@@ -140,7 +141,7 @@ suspend fun enablePushNotificationsWithFallback(
         return
     }
 
-    val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    val nm: NotificationManager = context.requireSystemService()
 
     accountManager.accounts.forEach {
         val notificationGroupEnabled = Build.VERSION.SDK_INT < 28 ||
@@ -168,9 +169,7 @@ fun disableAllNotifications(context: Context, accountManager: AccountManager) {
 
 private fun buildSubscriptionData(context: Context, account: AccountEntity): Map<String, Boolean> =
     buildMap {
-        val notificationManager = context.getSystemService(
-            Context.NOTIFICATION_SERVICE
-        ) as NotificationManager
+        val notificationManager: NotificationManager = context.requireSystemService()
         Notification.Type.visibleTypes.forEach {
             put(
                 "data[alerts][${it.presentation}]",

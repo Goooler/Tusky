@@ -91,6 +91,7 @@ import com.keylesspalace.tusky.util.hide
 import com.keylesspalace.tusky.util.loadAvatar
 import com.keylesspalace.tusky.util.parseAsMastodonHtml
 import com.keylesspalace.tusky.util.reduceSwipeSensitivity
+import com.keylesspalace.tusky.util.requireSystemService
 import com.keylesspalace.tusky.util.setClickableText
 import com.keylesspalace.tusky.util.show
 import com.keylesspalace.tusky.util.startActivityWithSlideInAnimation
@@ -507,7 +508,7 @@ class AccountActivity : BottomSheetActivity(), ActionButtonActivity, MenuProvide
             view.setOnLongClickListener {
                 loadedAccount?.let { loadedAccount ->
                     val fullUsername = getFullUsername(loadedAccount)
-                    val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val clipboard: ClipboardManager = requireSystemService()
                     clipboard.setPrimaryClip(ClipData.newPlainText(null, fullUsername))
                     Snackbar.make(
                         binding.root,

@@ -14,6 +14,7 @@ import com.keylesspalace.tusky.entity.Notification
 import com.keylesspalace.tusky.network.MastodonApi
 import com.keylesspalace.tusky.util.HttpHeaderLink
 import com.keylesspalace.tusky.util.isLessThan
+import com.keylesspalace.tusky.util.requireSystemService
 import javax.inject.Inject
 import kotlin.math.min
 import kotlin.time.Duration.Companion.milliseconds
@@ -55,9 +56,7 @@ class NotificationFetcher @Inject constructor(
         for (account in accountManager.getAllAccountsOrderedByActive()) {
             if (account.notificationsEnabled) {
                 try {
-                    val notificationManager = context.getSystemService(
-                        Context.NOTIFICATION_SERVICE
-                    ) as NotificationManager
+                    val notificationManager: NotificationManager = context.requireSystemService()
 
                     // Create sorted list of new notifications
                     val notifications = fetchNewNotifications(account)

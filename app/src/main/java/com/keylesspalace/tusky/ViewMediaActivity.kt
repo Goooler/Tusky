@@ -55,6 +55,7 @@ import com.keylesspalace.tusky.fragment.ViewVideoFragment
 import com.keylesspalace.tusky.pager.ImagePagerAdapter
 import com.keylesspalace.tusky.pager.SingleImagePagerAdapter
 import com.keylesspalace.tusky.util.getTemporaryMediaFilename
+import com.keylesspalace.tusky.util.requireSystemService
 import com.keylesspalace.tusky.util.startActivityWithSlideInAnimation
 import com.keylesspalace.tusky.util.submitAsync
 import com.keylesspalace.tusky.util.viewBinding
@@ -227,7 +228,7 @@ class ViewMediaActivity :
             Toast.LENGTH_SHORT
         ).show()
 
-        val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        val downloadManager: DownloadManager = requireSystemService()
         val request = DownloadManager.Request(Uri.parse(url))
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename)
         downloadManager.enqueue(request)
@@ -265,7 +266,7 @@ class ViewMediaActivity :
 
     private fun copyLink() {
         val url = imageUrl ?: attachments!![binding.viewPager.currentItem].attachment.url
-        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipboard: ClipboardManager = requireSystemService()
         clipboard.setPrimaryClip(ClipData.newPlainText(null, url))
     }
 
@@ -347,7 +348,7 @@ class ViewMediaActivity :
         val filename = getTemporaryMediaFilename(extension)
         val file = File(directory, filename)
 
-        val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        val downloadManager: DownloadManager = requireSystemService()
         val request = DownloadManager.Request(uri)
         request.setDestinationUri(Uri.fromFile(file))
         request.setVisibleInDownloadsUi(false)

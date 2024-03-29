@@ -51,6 +51,7 @@ import com.keylesspalace.tusky.entity.NewPoll
 import com.keylesspalace.tusky.entity.NewStatus
 import com.keylesspalace.tusky.entity.Status
 import com.keylesspalace.tusky.network.MastodonApi
+import com.keylesspalace.tusky.util.requireSystemService
 import com.keylesspalace.tusky.util.unsafeLazy
 import dagger.android.AndroidInjection
 import java.util.concurrent.ConcurrentHashMap
@@ -88,8 +89,8 @@ class SendStatusService : Service(), Injectable {
     private val statusesToSend = ConcurrentHashMap<Int, StatusToSend>()
     private val sendJobs = ConcurrentHashMap<Int, Job>()
 
-    private val notificationManager by unsafeLazy {
-        getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    private val notificationManager: NotificationManager by unsafeLazy {
+        requireSystemService()
     }
 
     override fun onCreate() {

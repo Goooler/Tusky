@@ -109,6 +109,7 @@ import com.keylesspalace.tusky.util.emojify
 import com.keylesspalace.tusky.util.getDimension
 import com.keylesspalace.tusky.util.hide
 import com.keylesspalace.tusky.util.reduceSwipeSensitivity
+import com.keylesspalace.tusky.util.requireSystemService
 import com.keylesspalace.tusky.util.show
 import com.keylesspalace.tusky.util.startActivityWithSlideInAnimation
 import com.keylesspalace.tusky.util.supportsOverridingActivityTransitions
@@ -227,9 +228,7 @@ class MainActivity : BottomSheetActivity(), ActionButtonActivity, HasAndroidInje
             val notificationId = intent.getIntExtra(NOTIFICATION_ID, -1)
             if (notificationId != -1) {
                 // opened from a notification action, cancel the notification
-                val notificationManager = getSystemService(
-                    NOTIFICATION_SERVICE
-                ) as NotificationManager
+                val notificationManager: NotificationManager = requireSystemService()
                 notificationManager.cancel(intent.getStringExtra(NOTIFICATION_TAG), notificationId)
             }
 

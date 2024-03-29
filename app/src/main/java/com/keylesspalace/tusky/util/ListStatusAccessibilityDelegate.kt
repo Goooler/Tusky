@@ -31,8 +31,7 @@ class ListStatusAccessibilityDelegate(
     private val statusActionListener: StatusActionListener,
     private val statusProvider: StatusProvider
 ) : RecyclerViewAccessibilityDelegate(recyclerView) {
-    private val a11yManager = context.getSystemService(Context.ACCESSIBILITY_SERVICE)
-        as AccessibilityManager
+    private val a11yManager: AccessibilityManager = context.requireSystemService()
 
     override fun getItemDelegate(): AccessibilityDelegateCompat = itemDelegate
 

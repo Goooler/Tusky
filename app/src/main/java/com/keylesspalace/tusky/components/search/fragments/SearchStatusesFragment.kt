@@ -19,7 +19,6 @@ import android.Manifest
 import android.app.DownloadManager
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -60,6 +59,7 @@ import com.keylesspalace.tusky.util.CardViewMode
 import com.keylesspalace.tusky.util.ListStatusAccessibilityDelegate
 import com.keylesspalace.tusky.util.StatusDisplayOptions
 import com.keylesspalace.tusky.util.openLink
+import com.keylesspalace.tusky.util.requireSystemService
 import com.keylesspalace.tusky.util.startActivityWithSlideInAnimation
 import com.keylesspalace.tusky.view.showMuteAccountDialog
 import com.keylesspalace.tusky.viewdata.AttachmentViewData
@@ -373,9 +373,7 @@ class SearchStatusesFragment : SearchFragment<StatusViewData.Concrete>(), Status
                 }
 
                 R.id.status_copy_link -> {
-                    val clipboard = requireActivity().getSystemService(
-                        Context.CLIPBOARD_SERVICE
-                    ) as ClipboardManager
+                    val clipboard: ClipboardManager = requireActivity().requireSystemService()
                     clipboard.setPrimaryClip(ClipData.newPlainText(null, statusUrl))
                     return@setOnMenuItemClickListener true
                 }
@@ -505,9 +503,7 @@ class SearchStatusesFragment : SearchFragment<StatusViewData.Concrete>(), Status
             val uri = Uri.parse(url)
             val filename = uri.lastPathSegment
 
-            val downloadManager = requireActivity().getSystemService(
-                Context.DOWNLOAD_SERVICE
-            ) as DownloadManager
+            val downloadManager: DownloadManager = requireActivity().requireSystemService()
             val request = DownloadManager.Request(uri)
             request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename)
             downloadManager.enqueue(request)

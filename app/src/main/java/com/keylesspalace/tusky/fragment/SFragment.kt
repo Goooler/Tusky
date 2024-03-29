@@ -59,6 +59,7 @@ import com.keylesspalace.tusky.network.MastodonApi
 import com.keylesspalace.tusky.usecase.TimelineCases
 import com.keylesspalace.tusky.util.openLink
 import com.keylesspalace.tusky.util.parseAsMastodonHtml
+import com.keylesspalace.tusky.util.requireSystemService
 import com.keylesspalace.tusky.util.startActivityWithSlideInAnimation
 import com.keylesspalace.tusky.view.showMuteAccountDialog
 import com.keylesspalace.tusky.viewdata.AttachmentViewData
@@ -266,11 +267,7 @@ abstract class SFragment : Fragment(), Injectable {
                 }
 
                 R.id.status_copy_link -> {
-                    (
-                        requireActivity().getSystemService(
-                            Context.CLIPBOARD_SERVICE
-                        ) as ClipboardManager
-                        ).apply {
+                    requireActivity().requireSystemService<ClipboardManager>().apply {
                         setPrimaryClip(ClipData.newPlainText(null, statusUrl))
                     }
                     return@setOnMenuItemClickListener true
@@ -524,9 +521,7 @@ abstract class SFragment : Fragment(), Injectable {
 
     private fun downloadAllMedia(status: Status) {
         Toast.makeText(context, R.string.downloading_media, Toast.LENGTH_SHORT).show()
-        val downloadManager = requireActivity().getSystemService(
-            Context.DOWNLOAD_SERVICE
-        ) as DownloadManager
+        val downloadManager: DownloadManager = requireContext().requireSystemService()
 
         for ((_, url) in status.attachments) {
             val uri = Uri.parse(url)

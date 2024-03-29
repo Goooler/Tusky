@@ -26,6 +26,7 @@ import com.keylesspalace.tusky.components.notifications.updateUnifiedPushSubscri
 import com.keylesspalace.tusky.db.AccountManager
 import com.keylesspalace.tusky.di.ApplicationScope
 import com.keylesspalace.tusky.network.MastodonApi
+import com.keylesspalace.tusky.util.requireSystemService
 import dagger.android.AndroidInjection
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -49,7 +50,7 @@ class NotificationBlockStateBroadcastReceiver : BroadcastReceiver() {
         if (Build.VERSION.SDK_INT < 28) return
         if (!canEnablePushNotifications(context, accountManager)) return
 
-        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val nm: NotificationManager = context.requireSystemService()
 
         val gid = when (intent.action) {
             NotificationManager.ACTION_NOTIFICATION_CHANNEL_BLOCK_STATE_CHANGED -> {

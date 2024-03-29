@@ -16,7 +16,6 @@ package com.keylesspalace.tusky.components.compose.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -27,6 +26,7 @@ import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.keylesspalace.tusky.R
 import com.keylesspalace.tusky.databinding.ViewComposeScheduleBinding
+import com.keylesspalace.tusky.util.requireSystemService
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -44,10 +44,7 @@ class ComposeScheduleView
         fun onTimeSet(time: String?)
     }
 
-    private var binding = ViewComposeScheduleBinding.inflate(
-        (context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater),
-        this
-    )
+    private var binding = ViewComposeScheduleBinding.inflate(context.requireSystemService(), this)
     private var listener: OnTimeSetListener? = null
     private var dateFormat = SimpleDateFormat.getDateInstance()
     private var timeFormat = SimpleDateFormat.getTimeInstance()

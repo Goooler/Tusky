@@ -24,6 +24,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.getSystemService
 import androidx.core.view.MenuProvider
 import androidx.preference.PreferenceManager
 import com.google.android.material.tabs.TabLayoutMediator
@@ -116,11 +117,7 @@ class SearchActivity : BottomSheetActivity(), HasAndroidInjector, MenuProvider, 
     private fun setupSearchView(searchView: SearchView) {
         searchView.setIconifiedByDefault(false)
         searchView.setSearchableInfo(
-            (
-                getSystemService(
-                    Context.SEARCH_SERVICE
-                ) as? SearchManager
-                )?.getSearchableInfo(componentName)
+            getSystemService<SearchManager>()?.getSearchableInfo(componentName)
         )
 
         // SearchView has a bug. If it's displayed 'app:showAsAction="always"' it's too wide,

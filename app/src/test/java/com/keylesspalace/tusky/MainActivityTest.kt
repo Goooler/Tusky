@@ -16,6 +16,7 @@ import com.keylesspalace.tusky.db.AccountEntity
 import com.keylesspalace.tusky.entity.Account
 import com.keylesspalace.tusky.entity.Notification
 import com.keylesspalace.tusky.entity.TimelineAccount
+import com.keylesspalace.tusky.util.requireSystemService
 import java.util.Date
 import kotlinx.coroutines.test.TestScope
 import org.junit.After
@@ -91,7 +92,7 @@ class MainActivityTest {
     }
 
     private fun showNotification(type: Notification.Type): Intent {
-        val notificationManager = context.getSystemService(NotificationManager::class.java)
+        val notificationManager: NotificationManager = context.requireSystemService()
         val shadowNotificationManager = shadowOf(notificationManager)
 
         NotificationHelper.createNotificationChannelsForAccount(accountEntity, context)
