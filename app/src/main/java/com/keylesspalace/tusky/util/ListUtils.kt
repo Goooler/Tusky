@@ -17,9 +17,6 @@
 
 package com.keylesspalace.tusky.util
 
-import java.util.ArrayList
-import java.util.LinkedHashSet
-
 /**
  * @return true if list is null or else return list.isEmpty()
  *
@@ -27,14 +24,6 @@ import java.util.LinkedHashSet
  */
 fun isEmpty(list: List<*>?): Boolean {
     return list == null || list.isEmpty()
-}
-
-/**
- * @return a new ArrayList containing the elements without duplicates in the same order
- */
-fun <T> removeDuplicates(list: List<T>): ArrayList<T> {
-    val set = LinkedHashSet(list)
-    return ArrayList(set)
 }
 
 inline fun <T> List<T>.withoutFirstWhich(predicate: (T) -> Boolean): List<T> {
