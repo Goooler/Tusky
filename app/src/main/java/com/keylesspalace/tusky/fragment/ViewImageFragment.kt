@@ -116,9 +116,7 @@ class ViewImageFragment : ViewMediaFragment() {
             description = attachment.description
         } else {
             url = arguments.getString(ARG_SINGLE_IMAGE_URL)
-            if (url == null) {
-                throw IllegalArgumentException("attachment or image url has to be set")
-            }
+            requireNotNull(url) { "attachment or image url has to be set" }
         }
 
         val singleTapDetector = GestureDetectorCompat(

@@ -121,7 +121,7 @@ class ViewMediaActivity :
             ImagePagerAdapter(this, realAttachs, initialPosition)
         } else {
             imageUrl = intent.getStringExtra(EXTRA_SINGLE_IMAGE_URL)
-                ?: throw IllegalArgumentException("attachment list or image url has to be set")
+            requireNotNull(imageUrl) { "attachment list or image url has to be set" }
 
             SingleImagePagerAdapter(this, imageUrl!!)
         }
