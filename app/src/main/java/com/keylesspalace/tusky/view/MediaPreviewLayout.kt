@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.children
 import com.keylesspalace.tusky.R
 import kotlin.math.roundToInt
 
@@ -185,12 +186,12 @@ class MediaPreviewLayout(context: Context, attrs: AttributeSet? = null) :
     }
 
     inline fun forEachIndexed(action: (Int, MediaPreviewImageView, TextView) -> Unit) {
-        for (index in 0 until childCount) {
-            val wrapper = getChildAt(index)
+        children.forEach {
+            val wrapper = it as ViewGroup
             action(
-                index,
-                wrapper.findViewById(R.id.preview_image_view) as MediaPreviewImageView,
-                wrapper.findViewById(R.id.preview_media_description_indicator) as TextView
+                indexOfChild(wrapper),
+                wrapper.findViewById(R.id.preview_image_view)!!,
+                wrapper.findViewById(R.id.preview_media_description_indicator)!!
             )
         }
     }

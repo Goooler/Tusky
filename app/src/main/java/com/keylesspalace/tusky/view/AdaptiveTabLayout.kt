@@ -3,6 +3,7 @@ package com.keylesspalace.tusky.view
 import android.content.Context
 import android.util.AttributeSet
 import android.view.ViewGroup
+import androidx.core.view.children
 import com.google.android.material.tabs.TabLayout
 
 /**
@@ -29,8 +30,8 @@ class AdaptiveTabLayout @JvmOverloads constructor(
 
         val tabLayout = getChildAt(0) as ViewGroup
         var widthOfAllTabs = 0
-        for (i in 0 until tabLayout.childCount) {
-            widthOfAllTabs += tabLayout.getChildAt(i).measuredWidth
+        tabLayout.children.forEach {
+            widthOfAllTabs += it.measuredWidth
         }
         if (widthOfAllTabs <= measuredWidth) {
             // fill all space if there is enough room
