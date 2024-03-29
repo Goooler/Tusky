@@ -152,7 +152,7 @@ class SearchActivity : BottomSheetActivity(), HasAndroidInjector, MenuProvider, 
 
         // Keep text that was entered also when switching to a different tab (before the search is executed)
         searchView.setOnQueryTextListener(this)
-        searchView.setQuery(viewModel.currentSearchFieldContent ?: "", false)
+        searchView.setQuery(viewModel.currentSearchFieldContent.orEmpty(), false)
 
         searchView.requestFocus()
     }

@@ -129,7 +129,7 @@ class AnnouncementsActivity :
                         } else {
                             binding.errorMessageView.hide()
                         }
-                        adapter.updateList(it.data ?: listOf())
+                        adapter.updateList(it.data.orEmpty())
                     }
                     is Loading -> {
                         binding.errorMessageView.hide()

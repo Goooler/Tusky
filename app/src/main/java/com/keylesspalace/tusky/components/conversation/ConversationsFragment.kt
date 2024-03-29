@@ -138,7 +138,7 @@ class ConversationsFragment :
                 lifecycleScope.launch {
                     eventHub.dispatch(
                         ConversationsLoadingEvent(
-                            accountManager.activeAccount?.accountId ?: ""
+                            accountManager.activeAccount?.accountId.orEmpty()
                         )
                     )
                 }

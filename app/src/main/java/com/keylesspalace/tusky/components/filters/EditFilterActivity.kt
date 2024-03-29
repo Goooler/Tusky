@@ -273,7 +273,7 @@ class EditFilterActivity : BaseActivity() {
                 // Possibly affected contexts: any context affected by the original filter OR any context affected by the updated filter
                 val affectedContexts = viewModel.contexts.value.map {
                     it.kind
-                }.union(originalFilter?.context ?: listOf()).distinct()
+                }.union(originalFilter?.context.orEmpty()).distinct()
                 eventHub.dispatch(FilterUpdatedEvent(affectedContexts))
             } else {
                 Snackbar.make(

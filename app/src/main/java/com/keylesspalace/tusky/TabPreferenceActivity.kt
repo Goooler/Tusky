@@ -294,7 +294,7 @@ class TabPreferenceActivity : BaseActivity(), Injectable, HasAndroidInjector, It
     }
 
     private fun validateHashtag(input: CharSequence?): Boolean {
-        val trimmedInput = input?.trim() ?: ""
+        val trimmedInput = input?.trim().orEmpty()
         return trimmedInput.isNotEmpty() && hashtagRegex.matcher(trimmedInput).matches()
     }
 

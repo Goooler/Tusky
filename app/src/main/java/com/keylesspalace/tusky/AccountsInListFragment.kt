@@ -106,7 +106,7 @@ class AccountsInListFragment : DialogFragment(), Injectable {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.state.collect { state ->
-                adapter.submitList(state.accounts.asRightOrNull() ?: listOf())
+                adapter.submitList(state.accounts.asRightOrNull().orEmpty())
 
                 when (state.accounts) {
                     is Either.Right -> binding.messageView.hide()
@@ -140,7 +140,7 @@ class AccountsInListFragment : DialogFragment(), Injectable {
             binding.accountsSearchRecycler.hide()
             binding.accountsRecycler.show()
         } else {
-            val listAccounts = state.accounts.asRightOrNull() ?: listOf()
+            val listAccounts = state.accounts.asRightOrNull().orEmpty()
             val newList = state.searchResult.map { acc ->
                 acc to listAccounts.contains(acc)
             }
