@@ -532,13 +532,13 @@ class ComposeViewModel @Inject constructor(
         _statusVisibility.value = startingVisibility
         val mentionedUsernames = composeOptions?.mentionedUsernames
         if (mentionedUsernames != null) {
-            val builder = StringBuilder()
-            for (name in mentionedUsernames) {
-                builder.append('@')
-                builder.append(name)
-                builder.append(' ')
+            startingText = buildString {
+                for (name in mentionedUsernames) {
+                    append('@')
+                    append(name)
+                    append(' ')
+                }
             }
-            startingText = builder.toString()
         }
 
         _scheduledAt.value = composeOptions?.scheduledAt

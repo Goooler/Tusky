@@ -44,23 +44,21 @@ class LicenseActivity : BaseActivity() {
     }
 
     private fun loadFileIntoTextView(@RawRes fileId: Int, textView: TextView) {
-        val sb = StringBuilder()
+        textView.text = buildString {
+            val br = BufferedReader(InputStreamReader(resources.openRawResource(fileId)))
 
-        val br = BufferedReader(InputStreamReader(resources.openRawResource(fileId)))
-
-        try {
-            var line: String? = br.readLine()
-            while (line != null) {
-                sb.append(line)
-                sb.append('\n')
-                line = br.readLine()
+            try {
+                var line: String? = br.readLine()
+                while (line != null) {
+                    append(line)
+                    append('\n')
+                    line = br.readLine()
+                }
+            } catch (e: IOException) {
+                Log.w("LicenseActivity", e)
             }
-        } catch (e: IOException) {
-            Log.w("LicenseActivity", e)
+
+            br.closeQuietly()
         }
-
-        br.closeQuietly()
-
-        textView.text = sb.toString()
     }
 }
