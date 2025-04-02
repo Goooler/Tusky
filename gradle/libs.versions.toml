@@ -38,7 +38,6 @@ material = "1.12.0"
 material-drawer = "9.0.2"
 mockito-inline = "5.2.0"
 mockito-kotlin = "5.4.0"
-moshi = "1.15.2"
 networkresult-calladapter = "1.2.0"
 okhttp = "4.12.0"
 okio = "3.10.2"
@@ -56,6 +55,7 @@ google-ksp = "com.google.devtools.ksp:2.1.20-1.0.32"
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ktlint = "org.jlleitschuh.gradle.ktlint:12.2.0"
 
 [libraries]
@@ -107,20 +107,18 @@ glide-core = { module = "com.github.bumptech.glide:glide", version.ref = "glide"
 glide-okhttp3-integration = { module = "com.github.bumptech.glide:okhttp3-integration", version.ref = "glide" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+kotlinx-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0"
 image-cropper = { module = "com.github.CanHub:Android-Image-Cropper", version.ref = "image-cropper" }
 material-drawer-core = { module = "com.mikepenz:materialdrawer", version.ref = "material-drawer" }
 material-drawer-iconics = { module = "com.mikepenz:materialdrawer-iconics", version.ref = "material-drawer" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito-kotlin" }
 mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockito-inline" }
 mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
-moshi-core = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
-moshi-adapters = { module = "com.squareup.moshi:moshi-adapters", version.ref = "moshi" }
-moshi-kotlin-codegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.ref = "moshi" }
 networkresult-calladapter = { module = "at.connyduck:networkresult-calladapter", version.ref = "networkresult-calladapter" }
 okhttp-core = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
-retrofit-converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "retrofit" }
+retrofit-converter-kotlinxSerialization = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "retrofit" }
 retrofit-core = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 sparkbutton = { module = "at.connyduck.sparkbutton:sparkbutton", version.ref = "sparkbutton" }
@@ -140,8 +138,7 @@ filemojicompat = ["filemojicompat-core", "filemojicompat-ui", "filemojicompat-de
 glide = ["glide-core", "glide-okhttp3-integration", "glide-animation-plugin"]
 material-drawer = ["material-drawer-core", "material-drawer-iconics"]
 mockito = ["mockito-kotlin", "mockito-inline"]
-moshi = ["moshi-core", "moshi-adapters"]
 okhttp = ["okhttp-core", "okhttp-logging-interceptor"]
-retrofit = ["retrofit-core", "retrofit-converter-moshi"]
+retrofit = ["retrofit-core", "retrofit-converter-kotlinxSerialization"]
 room = ["androidx-room-ktx", "androidx-room-paging"]
 xmldiff = ["diffx", "xmlwriter"]
