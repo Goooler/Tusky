@@ -22,11 +22,11 @@ import android.util.Log
 import at.connyduck.calladapter.networkresult.NetworkResultCallAdapterFactory
 import com.keylesspalace.tusky.BuildConfig
 import com.keylesspalace.tusky.db.AccountManager
-import com.keylesspalace.tusky.entity.Attachment
-import com.keylesspalace.tusky.entity.Notification
-import com.keylesspalace.tusky.entity.Status
-import com.keylesspalace.tusky.json.GuardedAdapter
-import com.keylesspalace.tusky.json.NotificationTypeAdapter
+import com.keylesspalace.tusky.json.AttachmentTypeSerializer
+import com.keylesspalace.tusky.json.GuardedSerializer
+import com.keylesspalace.tusky.json.NotificationTypeSerializer
+import com.keylesspalace.tusky.json.Rfc3339DateSerializer
+import com.keylesspalace.tusky.json.StatusVisibilitySerializer
 import com.keylesspalace.tusky.network.MastodonApi
 import com.keylesspalace.tusky.network.MediaUploadApi
 import com.keylesspalace.tusky.network.apiForAccount
@@ -35,9 +35,6 @@ import com.keylesspalace.tusky.settings.PrefKeys.HTTP_PROXY_PORT
 import com.keylesspalace.tusky.settings.PrefKeys.HTTP_PROXY_SERVER
 import com.keylesspalace.tusky.settings.ProxyConfiguration
 import com.keylesspalace.tusky.util.getNonNullString
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.adapters.EnumJsonAdapter
-import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -46,16 +43,19 @@ import dagger.hilt.components.SingletonComponent
 import java.net.IDN
 import java.net.InetSocketAddress
 import java.net.Proxy
-import java.util.Date
 import java.util.concurrent.TimeUnit
 import javax.inject.Named
 import javax.inject.Singleton
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.contextual
 import okhttp3.Cache
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttp
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 /**
  * Created by charlag on 3/24/18.
@@ -81,25 +81,20 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun providesMoshi(): Moshi = Moshi.Builder()
-        .add(GuardedAdapter.ANNOTATION_FACTORY)
-        .add(Date::class.java, Rfc3339DateJsonAdapter())
-        // Enum types with fallback value
-        .add(
-            Attachment.Type::class.java,
-            EnumJsonAdapter.create(Attachment.Type::class.java)
-                .withUnknownFallback(Attachment.Type.UNKNOWN)
-        )
-        .add(
-            Notification.Type::class.java,
-            NotificationTypeAdapter()
-        )
-        .add(
-            Status.Visibility::class.java,
-            EnumJsonAdapter.create(Status.Visibility::class.java)
-                .withUnknownFallback(Status.Visibility.UNKNOWN)
-        )
-        .build()
+    fun providesJson(): Json {
+        return Json {
+            ignoreUnknownKeys = true
+            isLenient = true
+            encodeDefaults = true
+            serializersModule = SerializersModule {
+                contextual(Rfc3339DateSerializer)
+                contextual(NotificationTypeSerializer)
+                contextual(GuardedSerializer)
+                contextual(AttachmentTypeSerializer)
+                contextual(StatusVisibilitySerializer)
+            }
+        }
+    }
 
     @Provides
     @Singleton
@@ -148,12 +143,13 @@ object NetworkModule {
     @Singleton
     fun providesRetrofit(
         httpClient: OkHttpClient,
-        moshi: Moshi
+        json: Json
     ): Retrofit {
+        val contentType = "application/json".toMediaType()
         return Retrofit.Builder()
             .baseUrl("https://${MastodonApi.PLACEHOLDER_DOMAIN}")
             .client(httpClient)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .addConverterFactory(json.asConverterFactory(contentType))
             .addCallAdapterFactory(NetworkResultCallAdapterFactory.create())
             .build()
     }
