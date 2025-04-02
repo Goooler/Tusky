@@ -18,7 +18,6 @@ class CacheUpdater @Inject constructor(
     eventHub: EventHub,
     accountManager: AccountManager,
     appDatabase: AppDatabase,
-    moshi: Moshi
 ) {
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
