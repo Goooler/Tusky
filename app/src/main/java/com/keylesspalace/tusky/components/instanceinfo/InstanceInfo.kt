@@ -26,10 +26,12 @@ data class InstanceInfo(
     val imageSizeLimit: Int,
     val imageMatrixLimit: Int,
     val maxMediaAttachments: Int,
+    val mediaDescriptionLimit: Int,
     val maxFields: Int,
     val maxFieldNameLength: Int?,
     val maxFieldValueLength: Int?,
     val version: String?,
     val translationEnabled: Boolean?,
     val mastodonApiVersion: Int?,
+    val vapidKey: String?
 )

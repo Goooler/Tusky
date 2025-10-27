@@ -27,6 +27,7 @@ import com.keylesspalace.tusky.entity.Notification
 import com.keylesspalace.tusky.entity.Status
 import com.keylesspalace.tusky.json.GuardedAdapter
 import com.keylesspalace.tusky.json.NotificationTypeAdapter
+import com.keylesspalace.tusky.json.StringOrBooleanAdapter
 import com.keylesspalace.tusky.network.MastodonApi
 import com.keylesspalace.tusky.network.MediaUploadApi
 import com.keylesspalace.tusky.network.apiForAccount
@@ -48,7 +49,6 @@ import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.Date
 import java.util.concurrent.TimeUnit
-import javax.inject.Named
 import javax.inject.Singleton
 import okhttp3.Cache
 import okhttp3.OkHttp
@@ -68,21 +68,10 @@ object NetworkModule {
     private const val TAG = "NetworkModule"
 
     @Provides
-    @Named("defaultPort")
-    fun providesDefaultPort(): Int {
-        return 443
-    }
-
-    @Provides
-    @Named("defaultScheme")
-    fun providesDefaultScheme(): String {
-        return "https://"
-    }
-
-    @Provides
     @Singleton
     fun providesMoshi(): Moshi = Moshi.Builder()
         .add(GuardedAdapter.ANNOTATION_FACTORY)
+        .add(StringOrBooleanAdapter.ANNOTATION_FACTORY)
         .add(Date::class.java, Rfc3339DateJsonAdapter())
         // Enum types with fallback value
         .add(
@@ -153,7 +142,7 @@ object NetworkModule {
         return Retrofit.Builder()
             .baseUrl("https://${MastodonApi.PLACEHOLDER_DOMAIN}")
             .client(httpClient)
-            .addConverterFactory(MoshiConverterFactory.create(moshi).withStreaming())
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
             .addCallAdapterFactory(NetworkResultCallAdapterFactory.create())
             .build()
     }

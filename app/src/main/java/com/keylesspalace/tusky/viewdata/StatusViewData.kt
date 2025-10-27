@@ -23,6 +23,14 @@ import com.keylesspalace.tusky.entity.Translation
 import com.keylesspalace.tusky.util.parseAsMastodonHtml
 import com.keylesspalace.tusky.util.shouldTrimStatus
 
+interface ConcreteViewData {
+    val viewData: StatusViewData.Concrete
+}
+
+interface LoadMoreViewData {
+    val isLoading: Boolean
+}
+
 sealed interface TranslationViewData {
     val data: Translation?
 
@@ -42,7 +50,6 @@ sealed interface TranslationViewData {
  */
 sealed class StatusViewData {
     abstract val id: String
-    var filter: Filter? = null
 
     data class Concrete(
         val status: Status,
@@ -58,9 +65,14 @@ sealed class StatusViewData {
         val isDetailed: Boolean = false,
         val repliedToAccount: TimelineAccount? = null,
         val translation: TranslationViewData? = null,
-    ) : StatusViewData() {
+        val filter: Filter? = null,
+        val filterActive: Boolean
+    ) : StatusViewData(), ConcreteViewData {
         override val id: String
             get() = status.id
+
+        override val viewData: Concrete
+            get() = this
 
         val content: Spanned =
             (translation?.data?.content ?: actionable.content).parseAsMastodonHtml()
@@ -113,6 +125,12 @@ sealed class StatusViewData {
         val isSelfReply: Boolean
             get() = status.inReplyToAccountId == status.account.id
 
+        val isFilterWarn: Boolean
+            get() = filterActive && filter?.action == Filter.Action.WARN
+
+        val isFilterHide: Boolean
+            get() = filter?.action == Filter.Action.HIDE
+
         /** Helper for Java */
         fun copyWithCollapsed(isCollapsed: Boolean): Concrete {
             return copy(isCollapsed = isCollapsed)
@@ -135,8 +153,8 @@ sealed class StatusViewData {
 
     data class LoadMore(
         override val id: String,
-        val isLoading: Boolean
-    ) : StatusViewData()
+        override val isLoading: Boolean
+    ) : StatusViewData(), LoadMoreViewData
 
     fun asStatusOrNull() = this as? Concrete
 

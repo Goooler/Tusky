@@ -124,13 +124,7 @@
     <string name="label_header">Encabezado</string>
     <string name="link_whats_an_instance">¿Qué es una instancia?</string>
     <string name="login_connection">Conectando…</string>
-    <string name="dialog_whats_an_instance">Introduzca aquí la dirección o el dominio de cualquier instancia, por ejemplo, mastodon.social, icosahedron.website, social.tchncs.de, ¡y <a href="https://instances.social">más!</a> 
-\n 
-\nSi todavía no tiene una cuenta, puede indicar el nombre de la instancia a la que quiere unirse y crear una cuenta allí. 
-\n 
-\nUna instancia es el lugar donde su cuenta está alojada, pero puede comunicarse y seguir usuarios de otras instancias como si estuvieran en la misma. 
-\n 
-\nPuede consultar más información en <a href="https://joinmastodon.org/es">joinmastodon.org</a>.</string>
+    <string name="dialog_whats_an_instance">Introduzca aquí la dirección o el dominio de cualquier instancia, por ejemplo, mastodon.social, icosahedron.website, social.tchncs.de, ¡y <a href="https://instances.social">más!</a> \u0020 \n \u0020 \nSi todavía no tiene una cuenta, puede indicar el nombre de la instancia a la que quiere unirse y crear una cuenta allí. \u0020 \n \u0020 \nUna instancia es el lugar donde su cuenta está alojada, pero puede comunicarse y seguir usuarios de otras instancias como si estuvieran en la misma. \u0020 \n \u0020 \nPuede consultar más información en <a href="https://joinmastodon.org/es">joinmastodon.org</a>.</string>
     <string name="dialog_title_finishing_media_upload">Terminando de subir multimedia</string>
     <string name="dialog_message_uploading_media">Subiendo…</string>
     <string name="dialog_download_image">Descargar</string>
@@ -208,8 +202,7 @@
          * the url can be changed to link to the localized version of the license.
     -->
     <string name="about_project_site">Web del proyecto: https://tusky.app</string>
-    <string name="about_bug_feature_request_site">Reporte de errores y peticiones de características:
-\nhttps://github.com/tuskyapp/Tusky/issues</string>
+    <string name="about_bug_feature_request_site">Reporte de errores y peticiones de características: \nhttps://github.com/tuskyapp/Tusky/issues</string>
     <string name="about_tusky_account">Perfil de Tusky</string>
     <string name="post_share_content">Compartir contenido</string>
     <string name="post_share_link">Compartir enlace</string>
@@ -238,11 +231,7 @@
     <string name="action_lists">Listas</string>
     <string name="title_lists">Listas</string>
     <string name="compose_active_account_description">Publicar como %1$s</string>
-    <plurals name="hint_describe_for_visually_impaired">
-        <item quantity="one">Descripción para personas con problemas de visión (límite de %1$d caracteres)</item>
-        <item quantity="many">Descripción para personas con problemas de visión (límite de %1$d caracteres)</item>
-        <item quantity="other">Descripción para personas con problemas de visión (límite de %1$d caracteres)</item>
-    </plurals>
+    <string name="hint_describe_for_visually_impaired">Descripción para personas con problemas de visión</string>
     <string name="action_set_caption">Añadir leyenda</string>
     <string name="action_remove">Eliminar</string>
     <string name="lock_account_label">Proteger cuenta</string>
@@ -340,7 +329,7 @@
         <item quantity="many">%1$d segundos restantes</item>
         <item quantity="other">%1$d segundos restantes</item>
     </plurals>
-    <string name="poll_info_format"> \u0020<!-- 15 votos • queda 1 hora --> \u0020%1$s • %2$s</string>
+    <string name="poll_info_format"><!-- 15 votos • queda 1 hora --> \u0020%1$s • %2$s</string>
     <plurals name="poll_info_votes">
         <item quantity="one">%1$s voto</item>
         <item quantity="many">%1$s votos</item>
@@ -481,13 +470,7 @@
     <string name="pref_title_wellbeing_mode">Bienestar</string>
     <string name="notification_subscription_description">Notificaciones cuando alguien al que estoy suscrito escribe una publicación</string>
     <string name="notification_subscription_name">Nuevas publicaciones</string>
-    <string name="wellbeing_mode_notice">Se ocultarán algunas informaciones que podrían afectar a tu bienestar. Esto incluye:
-\n
-\n- Notificaciones de favoritos, impulsos y seguidores
-\n- Conteo de favoritos e impulsos en publicaciones
-\n- Estadísticas de seguidores y publicaciones en perfiles
-\n
-\nLas notificaciones Push no serán afectadas, pero puedes revisar manualmente tus preferencias.</string>
+    <string name="wellbeing_mode_notice">Se ocultarán algunas informaciones que podrían afectar a tu bienestar. Esto incluye: \n \n- Notificaciones de favoritos, impulsos y seguidores \n- Conteo de favoritos e impulsos en publicaciones \n- Estadísticas de seguidores y publicaciones en perfiles \n \nLas notificaciones Push no serán afectadas, pero puedes revisar manualmente tus preferencias.</string>
     <string name="drafts_post_reply_removed">El toot al que redactaste una respuesta ha sido eliminado</string>
     <string name="draft_deleted">Borrador eliminado</string>
     <string name="drafts_failed_loading_reply">Error al cargar la información de respuesta</string>
@@ -592,13 +575,9 @@
     <string name="pref_summary_http_proxy_missing">&lt;sin establecer&gt;</string>
     <string name="pref_summary_http_proxy_invalid">&lt;inválido&gt;</string>
     <plurals name="action_post_failed_detail">
-        <item quantity="one">No se ha podido subir tu publicación y se ha guardado en Borradores.
-\n
-\nO no se ha podido contactar con el servidor, o ha rechazado tu publicación.</item>
+        <item quantity="one">No se ha podido subir tu publicación y se ha guardado en Borradores. \n \nO no se ha podido contactar con el servidor, o ha rechazado tu publicación.</item>
         <item quantity="many"/>
-        <item quantity="other">Tus publicaciones no se han podido subir y se han guardado en Borradores.
-\n
-\nO no se ha podido contactar con el servidor, o ha rechazado tus publicaciones.</item>
+        <item quantity="other">Tus publicaciones no se han podido subir y se han guardado en Borradores. \n \nO no se ha podido contactar con el servidor, o ha rechazado tus publicaciones.</item>
     </plurals>
     <string name="action_post_failed_show_drafts">Mostrar borradores</string>
     <string name="send_account_username_to">Compartir nombre de usuario de la cuenta con…</string>
@@ -622,9 +601,7 @@
     <string name="pref_title_show_stat_inline">Mostrar estadísticas de la entrada en la línea de tiempo</string>
     <string name="ui_error_unknown">razón desconocida</string>
     <string name="socket_timeout_exception">Contactar con tu servidor ha tardado demasiado tiempo</string>
-    <string name="help_empty_home">Esta es tu <b> cronología de inicio</b>. Muestra las publicaciones recientes de las cuentas que sigues. 
-\n 
-\nPara encontrar cuentas, puedes mirar en alguna de las otras cronologías. Por ejemplo, la cronología local de tu instancia {{group}}. O puedes buscarlas por nombre {{search}}; por ejemplo, busca Tusky para encontrar nuestra cuenta de Mastodon.</string>
+    <string name="help_empty_home">Esta es tu <b> cronología de inicio</b>. Muestra las publicaciones recientes de las cuentas que sigues. \u0020 \n \u0020 \nPara encontrar cuentas, puedes mirar en alguna de las otras cronologías. Por ejemplo, la cronología local de tu instancia {{group}}. O puedes buscarlas por nombre {{search}}; por ejemplo, busca Tusky para encontrar nuestra cuenta de Mastodon.</string>
     <string name="ui_error_bookmark">Fallo al añadir a marcadores: %1$s</string>
     <string name="select_list_manage">Gestionar listas</string>
     <string name="ui_error_favourite">Fallo al favoritear publicación: %1$s</string>
@@ -659,22 +636,17 @@
     <string name="label_image">Imagen</string>
     <string name="dialog_follow_warning">¿Seguir esta cuenta?</string>
     <string name="pref_default_reply_privacy">Visibilidad de la respuesta (sin sincronizar con el servidor)</string>
-    <string name="about_account_info">\@%1$s@%2$s
-\nVersión: %3$s</string>
+    <string name="about_account_info">\@%1$s@%2$s \nVersión: %3$s</string>
     <string name="pref_title_show_notifications_filter">Mostrar filtros de Notificaciones</string>
     <string name="label_expires_after">Caduca en</string>
-    <string name="error_missing_edits">Tu servidor sabe que este mensaje fue editado, pero no tiene una copia de las ediciones, por lo que no se pueden mostrar. 
-\n 
-\nEste es el <a href="https://github.com/mastodon/mastodon/issues/25398">fallo de Mastodon #25398</a>.</string>
+    <string name="error_missing_edits">Tu servidor sabe que este mensaje fue editado, pero no tiene una copia de las ediciones, por lo que no se pueden mostrar. \u0020 \n \u0020 \nEste es el <a href="https://github.com/mastodon/mastodon/issues/25398">fallo de Mastodon #25398</a>.</string>
     <string name="ui_error_translate">No se pudo traducir: %1$s</string>
     <string name="muting_hashtag_success_format">Silenciando etiqueta #%1$s como advertencia</string>
     <string name="pref_default_reply_privacy_explanation">La visibilidad preseleccionada dependerá del mensaje al que estés contestando.</string>
     <string name="notification_listenable_worker_name">Actividad en segundo plano</string>
     <string name="notification_prune_cache">Mantenimiento de la caché…</string>
     <string name="about_device_info_title">Tu dispositivo</string>
-    <string name="about_device_info">%1$s %2$s
-\nVersión de Android: %3$s
-\nVersión del SDK: %4$d</string>
+    <string name="about_device_info">%1$s %2$s \nVersión de Android: %3$s \nVersión del SDK: %4$d</string>
     <string name="label_translating">Traduciendo…</string>
     <string name="label_translated">Traducido del %1$s con %2$s</string>
     <string name="action_view_filter">Ver filtro</string>
@@ -704,11 +676,7 @@
     <string name="pref_title_per_timeline_preferences">Preferencias de cronología</string>
     <string name="notification_policy_filter">Filtrar</string>
     <string name="list_exclusive_label">Ocultar en la cronología de tu instancia</string>
-    <string name="help_empty_conversations">Aquí están tus <b>mensajes privados</b>; a veces llamados conversaciones o mensajes directos (MD). \u0020
-\n \u0020
-\nLos mensajes privados se crean fijando la visibilidad {{public}} de una publicación a {{mail}} <i>Directo</i> y mencionando a uno o más usuarios. \u0020
-\n \u0020
-\nPor ejemplo puedes empezar desde el perfil de otro usuario, pulsar el botón de crear [iconics gmd_edit] y cambiar la visibilidad.</string>
+    <string name="help_empty_conversations">Aquí están tus <b>mensajes privados</b>; a veces llamados conversaciones o mensajes directos (MD). \u0020 \n \u0020 \nLos mensajes privados se crean fijando la visibilidad {{public}} de una publicación a {{mail}} <i>Directo</i> y mencionando a uno o más usuarios. \u0020 \n \u0020 \nPor ejemplo puedes empezar desde el perfil de otro usuario, pulsar el botón de crear [iconics gmd_edit] y cambiar la visibilidad.</string>
     <string name="about_copied">Se copió la información de versión y dispositivo</string>
     <string name="unknown_notification_type_explanation">Tusky no ha reconocido este tipo de notificación y no pudo mostrartela. La interfaz web de tu servidor quizás pueda. ¡Por favor informa a los desarrolladores de Tusky para que añadir soporte de la misma!</string>
     <string name="notification_moderation_warning_name">Alertas de moderación</string>
@@ -773,4 +741,53 @@
     <string name="pref_match_default_post_privacy">Usar la visibilidad predefinida</string>
     <string name="following_hashtag_success_format">Ahora sigues la etiqueta #%1$s</string>
     <string name="app_theme_system_black">Usar tema del sistema (negro)</string>
+    <string name="scheduled_post_reply">Respuesta</string>
+    <string name="scheduled_post_deletion_error">No se ha podido eliminar la publicación programada.</string>
+    <string name="action_rehide_status">Volver a ocultar el estado filtrado</string>
+    <string name="unknown_notification_filter_unsolicited_private_mentions_description">Filtrado, a menos que sea una respuesta a tu propia mención o si sigues al remitente</string>
+    <string name="account_disconnected_message">El inicio de sesión de Tusky para %1$s ya no es válido. Esto puede suceder porque cambiaste tu contraseña o revocaste el acceso a Tusky. Inicia sesión de nuevo.</string>
+    <string name="notification_severed_relationship_name">Conexiones perdidas</string>
+    <string name="notification_channel_other_description">Otras notificaciones, como conexiones perdidas y advertencias de moderación</string>
+    <string name="yes">Si</string>
+    <string name="reblog_privacy_unlisted_description">Igual que público, pero nunca se mostrará en las líneas de tiempo públicas</string>
+    <string name="message_filters_empty">No tienes filtros</string>
+    <string name="confirm_dismiss_poll">¿Descargar cambios en la encuesta?</string>
+    <string name="report_category_violation_description">Eres consciente de que infringe normas específicas</string>
+    <string name="report_category_spam_description">Enlaces maliciosos, interacciones falsas o respuestas repetitivas</string>
+    <string name="report_category_spam_title">Es spam</string>
+    <string name="report_category_legal_description">Crees que infringe la ley de tu país o del país del servidor</string>
+    <string name="post_replied">Respondió</string>
+    <string name="action_remove_account">Eliminar cuenta</string>
+    <string name="action_remove_account_confirm">¿Estás segure de que deseas eliminar la cuenta %1$s de Tusky? Esto eliminará todos los datos locales de la cuenta, incluidos los borradores y las preferencias.</string>
+    <string name="notification_channel_admin">Admin</string>
+    <string name="notification_channel_admin_description">Notificaciones administrativas, como nuevos informes o registros</string>
+    <string name="poll_show_results">Mostrar resultados</string>
+    <string name="filter_action_blur">Desenfocar</string>
+    <string name="filter_description_blur">Ocultar multimedia con una advertencia</string>
+    <string name="unknown_notification_filter_moderated_accounts">Cuentas moderadas</string>
+    <string name="accept_notification_request">Aceptar solicitud de notificación</string>
+    <string name="dismiss_notification_request">Rechazar solicitud de notificación</string>
+    <string name="relationship_severance_event_title">Conexión perdida</string>
+    <string name="no">No</string>
+    <string name="confirm_dismiss_caption">¿Descartar los cambios en los subtítulos?</string>
+    <string name="reblog_privacy_public_description">Todo el mundo puede ver tu impulso</string>
+    <string name="reblog_privacy_followers_only_description">Solamente las personas que te siguen pueden ver tu impulso</string>
+    <string name="reblog_confirm">¿Impulsar este post?</string>
+    <string name="favourite_confirm">¿Te gusta esta publicación?</string>
+    <string name="edit_image_rotate">Rotar</string>
+    <string name="edit_image_flip">Voltear</string>
+    <string name="edit_image_flip_horizontally">Voltear horizontalmente</string>
+    <string name="edit_image_flip_vertically">Voltear verticalmente</string>
+    <string name="report_which_rules_violated">¿Qué normas se están infringiendo? Seleccione todas las que correspondan.</string>
+    <string name="report_problem_with_post">¿Cuál es el problema con esta publicación?</string>
+    <string name="report_category_legal_title">Es ilegal</string>
+    <string name="report_category_violation_title">Infringe las reglas del servidor</string>
+    <string name="report_category_other_description">El tema no encaja en otras categorías</string>
+    <string name="report_category_other_title">Es otra cosa</string>
+    <string name="action_login_again">Inicie sesión de nuevo</string>
+    <string name="account_disconnected_title">Cuenta desconectada</string>
+    <string name="filter_context_home">Inicio y listas</string>
+    <string name="post_replied_self">Hilo continuado</string>
+    <string name="notification_channel_other">Otros</string>
+    <string name="action_reblog_unlisted">Impulso no listado</string>
 </resources>

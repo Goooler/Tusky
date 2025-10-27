@@ -46,6 +46,7 @@ import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
+import androidx.appcompat.R as appcompatR
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.FileProvider
 import androidx.core.content.res.use
@@ -62,10 +63,6 @@ import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.TransitionManager
-import com.canhub.cropper.CropImage
-import com.canhub.cropper.CropImageContract
-import com.canhub.cropper.options
-import com.google.android.material.R as materialR
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.color.MaterialColors
@@ -84,6 +81,10 @@ import com.keylesspalace.tusky.components.compose.dialog.makeFocusDialog
 import com.keylesspalace.tusky.components.compose.dialog.showAddPollDialog
 import com.keylesspalace.tusky.components.compose.view.ComposeOptionsListener
 import com.keylesspalace.tusky.components.compose.view.ComposeScheduleView
+import com.keylesspalace.tusky.components.compose.view.ComposeScheduleView.Companion.parseDate
+import com.keylesspalace.tusky.components.editimage.EditImageContract
+import com.keylesspalace.tusky.components.editimage.EditImageOptions
+import com.keylesspalace.tusky.components.editimage.EditImageResult
 import com.keylesspalace.tusky.components.instanceinfo.InstanceInfoRepository
 import com.keylesspalace.tusky.databinding.ActivityComposeBinding
 import com.keylesspalace.tusky.db.entity.AccountEntity
@@ -104,7 +105,6 @@ import com.keylesspalace.tusky.util.getMediaSize
 import com.keylesspalace.tusky.util.getParcelableArrayListExtraCompat
 import com.keylesspalace.tusky.util.getParcelableCompat
 import com.keylesspalace.tusky.util.getParcelableExtraCompat
-import com.keylesspalace.tusky.util.getSerializableCompat
 import com.keylesspalace.tusky.util.hide
 import com.keylesspalace.tusky.util.highlightSpans
 import com.keylesspalace.tusky.util.loadAvatar
@@ -116,6 +116,7 @@ import com.keylesspalace.tusky.util.show
 import com.keylesspalace.tusky.util.viewBinding
 import com.keylesspalace.tusky.util.visible
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.withCreationCallback
 import dagger.hilt.android.migration.OptionalInject
 import java.io.File
 import java.io.IOException
@@ -157,11 +158,20 @@ class ComposeActivity :
     var maximumTootCharacters = InstanceInfoRepository.DEFAULT_CHARACTER_LIMIT
     var charactersReservedPerUrl = InstanceInfoRepository.DEFAULT_CHARACTERS_RESERVED_PER_URL
 
-    private val viewModel: ComposeViewModel by viewModels()
+    private val viewModel: ComposeViewModel by viewModels(
+        extrasProducer = {
+            defaultViewModelCreationExtras.withCreationCallback<ComposeViewModel.Factory> { factory ->
+                factory.create(
+                    options = intent.getParcelableExtraCompat(COMPOSE_OPTIONS_EXTRA),
+                )
+            }
+        }
+    )
 
     private val binding by viewBinding(ActivityComposeBinding::inflate)
 
     private var maxUploadMediaNumber = InstanceInfoRepository.DEFAULT_MAX_MEDIA_ATTACHMENTS
+    private var mediaDescriptionLimit = InstanceInfoRepository.DEFAULT_MEDIA_DESCRIPTION_LIMIT
 
     private val takePictureLauncher =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
@@ -207,27 +217,31 @@ class ComposeActivity :
     }
 
     // Contract kicked off by editImageInQueue; expects viewModel.cropImageItemOld set
-    private val cropImage = registerForActivityResult(CropImageContract()) { result ->
-        val uriNew = result.uriContent
-        if (result.isSuccessful && uriNew != null) {
-            viewModel.cropImageItemOld?.let { itemOld ->
-                val size = getMediaSize(contentResolver, uriNew)
+    private val editImage = registerForActivityResult(EditImageContract()) { result ->
 
-                viewModel.addMediaToQueue(
-                    type = itemOld.type,
-                    uri = uriNew,
-                    mediaSize = size,
-                    description = itemOld.description,
-                    // Intentionally reset focus when cropping
-                    focus = null,
-                    replaceItem = itemOld
-                )
+        when (result) {
+            is EditImageResult.Success -> {
+                viewModel.cropImageItemOld?.let { itemOld ->
+                    val size = getMediaSize(contentResolver, result.outputUri)
+
+                    viewModel.addMediaToQueue(
+                        type = itemOld.type,
+                        uri = result.outputUri,
+                        mediaSize = size,
+                        description = itemOld.description,
+                        // Intentionally reset focus when cropping
+                        focus = null,
+                        replaceItem = itemOld
+                    )
+                }
             }
-        } else if (result == CropImage.CancelledResult) {
-            Log.w(TAG, "Edit image cancelled by user")
-        } else {
-            Log.w(TAG, "Edit image failed: " + result.error)
-            displayTransientMessage(R.string.error_image_edit_failed)
+            is EditImageResult.Error -> {
+                Log.w(TAG, "Edit image failed: " + result.exception)
+                displayTransientMessage(R.string.error_image_edit_failed)
+            }
+            is EditImageResult.Cancelled -> {
+                Log.w(TAG, "Edit image cancelled by user")
+            }
         }
         viewModel.cropImageItemOld = null
     }
@@ -282,7 +296,8 @@ class ComposeActivity :
                 CaptionDialog.newInstance(
                     item.localId,
                     item.description,
-                    item.uri
+                    item.uri,
+                    mediaDescriptionLimit
                 ).show(supportFragmentManager, "caption_dialog")
             },
             onAddFocus = { item ->
@@ -302,7 +317,6 @@ class ComposeActivity :
         /* If the composer is started up as a reply to another post, override the "starting" state
          * based on what the intent from the reply request passes. */
         val composeOptions: ComposeOptions? = intent.getParcelableExtraCompat(COMPOSE_OPTIONS_EXTRA)
-        viewModel.setup(composeOptions)
 
         setupButtons()
         subscribeToUpdates(mediaAdapter)
@@ -336,16 +350,6 @@ class ComposeActivity :
         /* Finally, overwrite state with data from saved instance state. */
         savedInstanceState?.let {
             photoUploadUri = it.getParcelableCompat(PHOTO_UPLOAD_URI_KEY)
-
-            setStatusVisibility(it.getSerializableCompat(VISIBILITY_KEY)!!)
-
-            it.getBoolean(CONTENT_WARNING_VISIBLE_KEY).apply {
-                viewModel.contentWarningChanged(this)
-            }
-
-            it.getString(SCHEDULED_TIME_KEY)?.let { time ->
-                viewModel.updateScheduledAt(time)
-            }
         }
 
         binding.composeEditField.post {
@@ -502,6 +506,7 @@ class ComposeActivity :
                 maximumTootCharacters = instanceData.maxChars
                 charactersReservedPerUrl = instanceData.charactersReservedPerUrl
                 maxUploadMediaNumber = instanceData.maxMediaAttachments
+                mediaDescriptionLimit = instanceData.mediaDescriptionLimit
                 updateVisibleCharactersLeft()
             }
         }
@@ -779,9 +784,7 @@ class ComposeActivity :
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putParcelable(PHOTO_UPLOAD_URI_KEY, photoUploadUri)
-        outState.putSerializable(VISIBILITY_KEY, viewModel.statusVisibility.value)
-        outState.putBoolean(CONTENT_WARNING_VISIBLE_KEY, viewModel.showContentWarning.value)
-        outState.putString(SCHEDULED_TIME_KEY, viewModel.scheduledAt.value)
+
         super.onSaveInstanceState(outState)
     }
 
@@ -812,12 +815,12 @@ class ComposeActivity :
             @AttrRes val color = if (contentWarningShown) {
                 binding.composeHideMediaButton.setImageResource(R.drawable.ic_visibility_off_24dp)
                 binding.composeHideMediaButton.isClickable = false
-                materialR.attr.colorPrimary
+                appcompatR.attr.colorPrimary
             } else {
                 binding.composeHideMediaButton.isClickable = true
                 if (markMediaSensitive) {
                     binding.composeHideMediaButton.setImageResource(R.drawable.ic_visibility_off_24dp)
-                    materialR.attr.colorPrimary
+                    appcompatR.attr.colorPrimary
                 } else {
                     binding.composeHideMediaButton.setImageResource(R.drawable.ic_visibility_24dp)
                     android.R.attr.textColorTertiary
@@ -848,7 +851,7 @@ class ComposeActivity :
                     if (binding.composeScheduleView.time == null) {
                         android.R.attr.textColorTertiary
                     } else {
-                        materialR.attr.colorPrimary
+                        appcompatR.attr.colorPrimary
                     }
                 )
             binding.composeScheduleButton.drawable.setTint(color)
@@ -1048,7 +1051,7 @@ class ComposeActivity :
 
     private fun verifyScheduledTime(): Boolean {
         return binding.composeScheduleView.verifyScheduledTime(
-            binding.composeScheduleView.getDateTime(viewModel.scheduledAt.value)
+            parseDate(viewModel.scheduledAt.value)
         )
     }
 
@@ -1175,13 +1178,12 @@ class ComposeActivity :
 
         viewModel.cropImageItemOld = item
 
-        cropImage.launch(
-            options(uri = item.uri) {
-                setOutputUri(uriNew)
-                setOutputCompressFormat(
-                    if (isPng) Bitmap.CompressFormat.PNG else Bitmap.CompressFormat.JPEG
-                )
-            }
+        editImage.launch(
+            EditImageOptions(
+                input = item.uri,
+                outputUri = uriNew,
+                outputCompressFormat = if (isPng) Bitmap.CompressFormat.PNG else Bitmap.CompressFormat.JPEG
+            )
         )
     }
 
@@ -1199,10 +1201,12 @@ class ComposeActivity :
                 binding.composeContentWarningField.text.length
             )
             binding.composeContentWarningField.requestFocus()
-            materialR.attr.colorPrimary
+            binding.composeContentWarningButton.setImageResource(R.drawable.ic_feedback_24dp_filled)
+            appcompatR.attr.colorPrimary
         } else {
             binding.composeContentWarningBar.hide()
             binding.composeEditField.requestFocus()
+            binding.composeContentWarningButton.setImageResource(R.drawable.ic_feedback_24dp)
             android.R.attr.textColorTertiary
         }
         binding.composeContentWarningButton.drawable.setTint(
@@ -1409,28 +1413,27 @@ class ComposeActivity :
 
     @Parcelize
     data class ComposeOptions(
-        // Let's keep fields var until all consumers are Kotlin
-        var scheduledTootId: String? = null,
-        var draftId: Int? = null,
-        var content: String? = null,
-        var mediaUrls: List<String>? = null,
-        var mediaDescriptions: List<String>? = null,
-        var mentionedUsernames: Set<String>? = null,
-        var inReplyToId: String? = null,
-        var replyVisibility: Status.Visibility? = null,
-        var visibility: Status.Visibility? = null,
-        var contentWarning: String? = null,
-        var replyingStatusAuthor: String? = null,
-        var replyingStatusContent: String? = null,
-        var mediaAttachments: List<Attachment>? = null,
-        var draftAttachments: List<DraftAttachment>? = null,
-        var scheduledAt: String? = null,
-        var sensitive: Boolean? = null,
-        var poll: NewPoll? = null,
-        var modifiedInitialState: Boolean? = null,
-        var language: String? = null,
-        var statusId: String? = null,
-        var kind: ComposeKind? = null
+        val scheduledTootId: String? = null,
+        val draftId: Int? = null,
+        val content: String? = null,
+        val mediaUrls: List<String>? = null,
+        val mediaDescriptions: List<String>? = null,
+        val mentionedUsernames: Set<String>? = null,
+        val inReplyToId: String? = null,
+        val replyVisibility: Status.Visibility? = null,
+        val visibility: Status.Visibility? = null,
+        val contentWarning: String? = null,
+        val replyingStatusAuthor: String? = null,
+        val replyingStatusContent: String? = null,
+        val mediaAttachments: List<Attachment>? = null,
+        val draftAttachments: List<DraftAttachment>? = null,
+        val scheduledAt: String? = null,
+        val sensitive: Boolean? = null,
+        val poll: NewPoll? = null,
+        val modifiedInitialState: Boolean? = null,
+        val language: String? = null,
+        val statusId: String? = null,
+        val kind: ComposeKind? = null
     ) : Parcelable
 
     companion object {
@@ -1438,9 +1441,6 @@ class ComposeActivity :
 
         internal const val COMPOSE_OPTIONS_EXTRA = "COMPOSE_OPTIONS"
         private const val PHOTO_UPLOAD_URI_KEY = "PHOTO_UPLOAD_URI"
-        private const val VISIBILITY_KEY = "VISIBILITY"
-        private const val SCHEDULED_TIME_KEY = "SCHEDULE"
-        private const val CONTENT_WARNING_VISIBLE_KEY = "CONTENT_WARNING_VISIBLE"
 
         /**
          * @param options ComposeOptions to configure the ComposeActivity
@@ -1454,7 +1454,8 @@ class ComposeActivity :
         }
 
         fun canHandleMimeType(mimeType: String?): Boolean {
-            return mimeType != null && (mimeType.startsWith("image/") || mimeType.startsWith("video/") || mimeType.startsWith("audio/") || mimeType == "text/plain")
+            return mimeType != null &&
+                (mimeType.startsWith("image/") || mimeType.startsWith("video/") || mimeType.startsWith("audio/") || mimeType == "text/plain")
         }
 
         /**

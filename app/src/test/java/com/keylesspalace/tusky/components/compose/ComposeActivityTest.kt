@@ -31,7 +31,6 @@ import com.keylesspalace.tusky.db.AppDatabase
 import com.keylesspalace.tusky.db.dao.InstanceDao
 import com.keylesspalace.tusky.db.entity.AccountEntity
 import com.keylesspalace.tusky.db.entity.EmojisEntity
-import com.keylesspalace.tusky.db.entity.InstanceInfoEntity
 import com.keylesspalace.tusky.di.NetworkModule
 import com.keylesspalace.tusky.entity.Instance
 import com.keylesspalace.tusky.entity.InstanceConfiguration
@@ -72,8 +71,6 @@ import retrofit2.Response
 @RunWith(AndroidJUnit4::class)
 class ComposeActivityTest {
     private lateinit var activity: ComposeActivity
-    private lateinit var accountManagerMock: AccountManager
-    private lateinit var apiMock: MastodonApi
 
     private val instanceDomain = "example.domain"
 
@@ -108,13 +105,13 @@ class ComposeActivityTest {
         val controller = Robolectric.buildActivity(ComposeActivity::class.java)
         activity = controller.get()
 
-        accountManagerMock = mock {
+        val accountManagerMock: AccountManager = mock {
             on { accounts } doReturn listOf(account)
             on { accountsFlow } doReturn MutableStateFlow(listOf(account))
             on { activeAccount } doReturn account
         }
 
-        apiMock = mock {
+        val apiMock: MastodonApi = mock {
             onBlocking { getCustomEmojis() } doReturn NetworkResult.success(emptyList())
             onBlocking { getInstance() } doReturn instanceResponseCallback?.invoke().let { instance ->
                 if (instance == null) {
@@ -136,8 +133,7 @@ class ComposeActivityTest {
         }
 
         val instanceDaoMock: InstanceDao = mock {
-            onBlocking { getInstanceInfo(any()) } doReturn
-                InstanceInfoEntity(instanceDomain, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)
+            onBlocking { getInstanceInfo(any()) } doReturn null
             onBlocking { getEmojiInfo(any()) } doReturn
                 EmojisEntity(instanceDomain, emptyList())
         }
@@ -149,12 +145,14 @@ class ComposeActivityTest {
         val instanceInfoRepo = InstanceInfoRepository(apiMock, dbMock, accountManagerMock, CoroutineScope(SupervisorJob()))
 
         val viewModel = ComposeViewModel(
-            apiMock,
-            accountManagerMock,
-            mock(),
-            mock(),
-            mock(),
-            instanceInfoRepo
+            api = apiMock,
+            accountManager = accountManagerMock,
+            mediaUploader = mock(),
+            serviceClient = mock(),
+            draftHelper = mock(),
+            state = mock(),
+            composeOptions = composeOptions,
+            instanceInfoRepo = instanceInfoRepo
         )
         activity.intent = Intent(activity, ComposeActivity::class.java).apply {
             putExtra(ComposeActivity.COMPOSE_OPTIONS_EXTRA, composeOptions)
@@ -262,7 +260,9 @@ class ComposeActivityTest {
     @Test
     fun whenDifferentCharLimitsArePopulated_statusConfigurationLimitIsUsed() {
         val customMaximum = 1000
-        instanceV1ResponseCallback = { getInstanceV1WithCustomConfiguration(customMaximum, getCustomInstanceConfiguration(maximumStatusCharacters = customMaximum * 2)) }
+        instanceV1ResponseCallback = {
+            getInstanceV1WithCustomConfiguration(customMaximum, getCustomInstanceConfiguration(maximumStatusCharacters = customMaximum * 2))
+        }
         setupActivity()
         shadowOf(getMainLooper()).idle()
         assertEquals(customMaximum * 2, activity.maximumTootCharacters)
@@ -331,7 +331,9 @@ class ComposeActivityTest {
         val url = "https://www.google.dk/search?biw=1920&bih=990&tbm=isch&sa=1&ei=bmDrWuOoKMv6kwWOkIaoDQ&q=indiana+jones+i+hate+snakes+animated&oq=indiana+jones+i+hate+snakes+animated&gs_l=psy-ab.3...54174.55443.0.55553.9.7.0.0.0.0.255.333.1j0j1.2.0....0...1c.1.64.psy-ab..7.0.0....0.40G-kcDkC6A#imgdii=PSp15hQjN1JqvM:&imgrc=H0hyE2JW5wrpBM"
         val additionalContent = "Check out this @image #search result: "
         val customUrlLength = 16
-        instanceV1ResponseCallback = { getInstanceV1WithCustomConfiguration(configuration = getCustomInstanceConfiguration(charactersReservedPerUrl = customUrlLength)) }
+        instanceV1ResponseCallback = {
+            getInstanceV1WithCustomConfiguration(configuration = getCustomInstanceConfiguration(charactersReservedPerUrl = customUrlLength))
+        }
         setupActivity()
         shadowOf(getMainLooper()).idle()
         insertSomeTextInContent(additionalContent + url)
@@ -357,7 +359,9 @@ class ComposeActivityTest {
         val url = "https://www.google.dk/search?biw=1920&bih=990&tbm=isch&sa=1&ei=bmDrWuOoKMv6kwWOkIaoDQ&q=indiana+jones+i+hate+snakes+animated&oq=indiana+jones+i+hate+snakes+animated&gs_l=psy-ab.3...54174.55443.0.55553.9.7.0.0.0.0.255.333.1j0j1.2.0....0...1c.1.64.psy-ab..7.0.0....0.40G-kcDkC6A#imgdii=PSp15hQjN1JqvM:&imgrc=H0hyE2JW5wrpBM"
         val additionalContent = " Check out this @image #search result: "
         val customUrlLength = 18 // The intention is that this is longer than shortUrl.length
-        instanceV1ResponseCallback = { getInstanceV1WithCustomConfiguration(configuration = getCustomInstanceConfiguration(charactersReservedPerUrl = customUrlLength)) }
+        instanceV1ResponseCallback = {
+            getInstanceV1WithCustomConfiguration(configuration = getCustomInstanceConfiguration(charactersReservedPerUrl = customUrlLength))
+        }
         setupActivity()
         shadowOf(getMainLooper()).idle()
         insertSomeTextInContent(shortUrl + additionalContent + url)
@@ -381,7 +385,9 @@ class ComposeActivityTest {
         val url = "https://www.google.dk/search?biw=1920&bih=990&tbm=isch&sa=1&ei=bmDrWuOoKMv6kwWOkIaoDQ&q=indiana+jones+i+hate+snakes+animated&oq=indiana+jones+i+hate+snakes+animated&gs_l=psy-ab.3...54174.55443.0.55553.9.7.0.0.0.0.255.333.1j0j1.2.0....0...1c.1.64.psy-ab..7.0.0....0.40G-kcDkC6A#imgdii=PSp15hQjN1JqvM:&imgrc=H0hyE2JW5wrpBM"
         val additionalContent = " Check out this @image #search result: "
         val customUrlLength = 16
-        instanceV1ResponseCallback = { getInstanceV1WithCustomConfiguration(configuration = getCustomInstanceConfiguration(charactersReservedPerUrl = customUrlLength)) }
+        instanceV1ResponseCallback = {
+            getInstanceV1WithCustomConfiguration(configuration = getCustomInstanceConfiguration(charactersReservedPerUrl = customUrlLength))
+        }
         setupActivity()
         shadowOf(getMainLooper()).idle()
         insertSomeTextInContent(url + additionalContent + url)
@@ -598,16 +604,17 @@ class ComposeActivityTest {
 
     private fun getConfiguration(maximumStatusCharacters: Int?, charactersReservedPerUrl: Int?): Instance.Configuration {
         return Instance.Configuration(
-            Instance.Configuration.Urls(),
-            Instance.Configuration.Accounts(maxFeaturedTags = 1, maxProfileFields = 4),
-            Instance.Configuration.Statuses(
-                maximumStatusCharacters ?: InstanceInfoRepository.DEFAULT_CHARACTER_LIMIT,
-                InstanceInfoRepository.DEFAULT_MAX_MEDIA_ATTACHMENTS,
-                charactersReservedPerUrl ?: InstanceInfoRepository.DEFAULT_CHARACTERS_RESERVED_PER_URL
+            urls = Instance.Configuration.Urls(),
+            vapid = Instance.Configuration.VapidKey(),
+            accounts = Instance.Configuration.Accounts(maxFeaturedTags = 1, maxProfileFields = 4),
+            statuses = Instance.Configuration.Statuses(
+                maxCharacters = maximumStatusCharacters ?: InstanceInfoRepository.DEFAULT_CHARACTER_LIMIT,
+                maxMediaAttachments = InstanceInfoRepository.DEFAULT_MAX_MEDIA_ATTACHMENTS,
+                charactersReservedPerUrl = charactersReservedPerUrl ?: InstanceInfoRepository.DEFAULT_CHARACTERS_RESERVED_PER_URL
             ),
-            Instance.Configuration.MediaAttachments(0, 0, 0, 0, 0),
-            Instance.Configuration.Polls(0, 0, 0, 0),
-            Instance.Configuration.Translation(false)
+            mediaAttachments = Instance.Configuration.MediaAttachments(0, 0, 0, 0, 0),
+            polls = Instance.Configuration.Polls(0, 0, 0, 0),
+            translation = Instance.Configuration.Translation(false)
         )
     }
 

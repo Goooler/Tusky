@@ -21,7 +21,7 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.keylesspalace.tusky.R
-import com.keylesspalace.tusky.adapter.FilteredStatusViewHolder
+import com.keylesspalace.tusky.adapter.FilteredNotificationViewHolder
 import com.keylesspalace.tusky.adapter.FollowRequestViewHolder
 import com.keylesspalace.tusky.adapter.LoadMoreViewHolder
 import com.keylesspalace.tusky.adapter.PlaceholderViewHolder
@@ -36,9 +36,9 @@ import com.keylesspalace.tusky.databinding.ItemSeveredRelationshipNotificationBi
 import com.keylesspalace.tusky.databinding.ItemStatusFilteredBinding
 import com.keylesspalace.tusky.databinding.ItemStatusNotificationBinding
 import com.keylesspalace.tusky.databinding.ItemUnknownNotificationBinding
-import com.keylesspalace.tusky.entity.Filter
 import com.keylesspalace.tusky.entity.Notification
 import com.keylesspalace.tusky.interfaces.AccountActionListener
+import com.keylesspalace.tusky.interfaces.LoadMoreActionListener
 import com.keylesspalace.tusky.interfaces.StatusActionListener
 import com.keylesspalace.tusky.util.AbsoluteTimeFormatter
 import com.keylesspalace.tusky.util.StatusDisplayOptions
@@ -59,7 +59,8 @@ interface NotificationsViewHolder {
 class NotificationsPagingAdapter(
     private val accountId: String,
     private var statusDisplayOptions: StatusDisplayOptions,
-    private val statusListener: StatusActionListener,
+    private val statusListener: StatusActionListener<NotificationViewData.Concrete>,
+    private val loadMoreListener: LoadMoreActionListener<NotificationViewData.LoadMore>,
     private val notificationActionListener: NotificationActionListener,
     private val accountActionListener: AccountActionListener,
     private val instanceName: String
@@ -86,13 +87,13 @@ class NotificationsPagingAdapter(
             is NotificationViewData.Concrete -> {
                 when (notification.type) {
                     Notification.Type.Mention,
-                    Notification.Type.Poll -> if (notification.statusViewData?.filter?.action == Filter.Action.WARN) {
+                    Notification.Type.Poll -> if (notification.statusViewData?.isFilterWarn == true) {
                         VIEW_TYPE_STATUS_FILTERED
                     } else {
                         VIEW_TYPE_STATUS
                     }
                     Notification.Type.Status,
-                    Notification.Type.Update -> if (notification.statusViewData?.filter?.action == Filter.Action.WARN) {
+                    Notification.Type.Update -> if (notification.statusViewData?.isFilterWarn == true) {
                         VIEW_TYPE_STATUS_FILTERED
                     } else {
                         VIEW_TYPE_STATUS_NOTIFICATION
@@ -124,7 +125,7 @@ class NotificationsPagingAdapter(
                 statusListener,
                 accountId
             )
-            VIEW_TYPE_STATUS_FILTERED -> FilteredStatusViewHolder(
+            VIEW_TYPE_STATUS_FILTERED -> FilteredNotificationViewHolder(
                 ItemStatusFilteredBinding.inflate(inflater, parent, false),
                 statusListener
             )
@@ -146,7 +147,7 @@ class NotificationsPagingAdapter(
             )
             VIEW_TYPE_LOAD_MORE -> LoadMoreViewHolder(
                 ItemLoadMoreBinding.inflate(inflater, parent, false),
-                statusListener
+                loadMoreListener
             )
             VIEW_TYPE_REPORT -> ReportNotificationViewHolder(
                 ItemReportNotificationBinding.inflate(inflater, parent, false),
@@ -177,7 +178,7 @@ class NotificationsPagingAdapter(
                 is NotificationViewData.Concrete ->
                     (viewHolder as NotificationsViewHolder).bind(notification, payloads, statusDisplayOptions)
                 is NotificationViewData.LoadMore -> {
-                    (viewHolder as LoadMoreViewHolder).setup(notification.isLoading)
+                    (viewHolder as LoadMoreViewHolder<NotificationViewData.LoadMore>).setup(notification)
                 }
             }
         }

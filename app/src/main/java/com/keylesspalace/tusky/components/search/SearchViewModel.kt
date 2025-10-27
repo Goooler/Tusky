@@ -74,7 +74,8 @@ class SearchViewModel @Inject constructor(
                     isShowingContent = status.shouldShowContent(alwaysShowSensitiveMedia, Filter.Kind.PUBLIC),
                     isExpanded = alwaysOpenSpoiler,
                     isCollapsed = true,
-                    filter = status.getApplicableFilter(Filter.Kind.PUBLIC),
+                    filterKind = Filter.Kind.PUBLIC,
+                    filterActive = true
                 )
             }.apply {
                 loadedStatuses.addAll(this)
@@ -141,7 +142,11 @@ class SearchViewModel @Inject constructor(
         updateStatusViewData(statusViewData.copy(isExpanded = expanded))
     }
 
-    fun reblog(statusViewData: StatusViewData.Concrete, reblog: Boolean, visibility: Status.Visibility = Status.Visibility.PUBLIC) {
+    fun reblog(
+        statusViewData: StatusViewData.Concrete,
+        reblog: Boolean,
+        visibility: Status.Visibility = Status.Visibility.PUBLIC
+    ) {
         viewModelScope.launch {
             timelineCases.reblog(statusViewData.id, reblog, visibility).fold({
                 updateStatus(

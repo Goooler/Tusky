@@ -49,12 +49,11 @@ import com.keylesspalace.tusky.util.show
 import com.keylesspalace.tusky.util.unicodeWrap
 import com.keylesspalace.tusky.util.visible
 import com.keylesspalace.tusky.viewdata.NotificationViewData
-import com.keylesspalace.tusky.viewdata.StatusViewData
 import java.util.Date
 
 internal class StatusNotificationViewHolder(
     private val binding: ItemStatusNotificationBinding,
-    private val statusActionListener: StatusActionListener,
+    private val statusActionListener: StatusActionListener<NotificationViewData.Concrete>,
     private val absoluteTimeFormatter: AbsoluteTimeFormatter
 ) : NotificationsViewHolder, RecyclerView.ViewHolder(binding.root) {
     private val avatarRadius48dp = itemView.context.resources.getDimensionPixelSize(
@@ -102,10 +101,7 @@ internal class StatusNotificationViewHolder(
                 }
 
                 val viewThreadListener = View.OnClickListener {
-                    val position = bindingAdapterPosition
-                    if (position != RecyclerView.NO_POSITION) {
-                        statusActionListener.onViewThread(position)
-                    }
+                    statusActionListener.onViewThread(viewData)
                 }
 
                 binding.notificationContainer.setOnClickListener(viewThreadListener)
@@ -266,11 +262,11 @@ internal class StatusNotificationViewHolder(
         )
         binding.notificationTopText.text = emojifiedText
         if (statusViewData != null) {
+            val hasContent = statusViewData.status.content.isNotEmpty()
             val hasSpoiler = statusViewData.status.spoilerText.isNotEmpty()
-            binding.notificationContentWarningDescription.visibility =
-                if (hasSpoiler) View.VISIBLE else View.GONE
-            binding.notificationContentWarningButton.visibility =
-                if (hasSpoiler) View.VISIBLE else View.GONE
+            binding.notificationContent.visible(hasContent)
+            binding.notificationContentWarningDescription.visible(hasSpoiler)
+            binding.notificationContentWarningButton.visible(hasSpoiler && hasContent)
             if (statusViewData.isExpanded) {
                 binding.notificationContentWarningButton.setText(
                     R.string.post_content_warning_show_less
@@ -281,42 +277,33 @@ internal class StatusNotificationViewHolder(
                 )
             }
             binding.notificationContentWarningButton.setOnClickListener {
-                if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
-                    statusActionListener.onExpandedChange(
-                        !statusViewData.isExpanded,
-                        bindingAdapterPosition
-                    )
-                }
-                binding.notificationContent.visibility =
-                    if (statusViewData.isExpanded) View.GONE else View.VISIBLE
+                statusActionListener.onExpandedChange(
+                    notificationViewData,
+                    !statusViewData.isExpanded
+                )
+                binding.notificationContent.visible(!statusViewData.isExpanded)
             }
-            setupContentAndSpoiler(listener, statusViewData, animateEmojis)
+            setupContentAndSpoiler(listener, notificationViewData, animateEmojis)
         }
     }
 
     private fun setupContentAndSpoiler(
         listener: LinkListener,
-        statusViewData: StatusViewData.Concrete,
+        notificationViewData: NotificationViewData.Concrete,
         animateEmojis: Boolean
     ) {
+        val statusViewData = notificationViewData.viewData
         val shouldShowContentIfSpoiler = statusViewData.isExpanded
+        val hasContent = statusViewData.status.content.isNotEmpty()
         val hasSpoiler = statusViewData.status.spoilerText.isNotEmpty()
-        if (!shouldShowContentIfSpoiler && hasSpoiler) {
-            binding.notificationContent.visibility = View.GONE
-        } else {
-            binding.notificationContent.visibility = View.VISIBLE
-        }
-        val content = statusViewData.content
+        binding.notificationContent.visible(hasContent && (shouldShowContentIfSpoiler || !hasSpoiler))
         val emojis = statusViewData.actionable.emojis
         if (statusViewData.isCollapsible && (statusViewData.isExpanded || !hasSpoiler)) {
             binding.buttonToggleNotificationContent.setOnClickListener {
-                val position = bindingAdapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    statusActionListener.onContentCollapsedChange(
-                        !statusViewData.isCollapsed,
-                        position
-                    )
-                }
+                statusActionListener.onContentCollapsedChange(
+                    notificationViewData,
+                    !statusViewData.isCollapsed
+                )
             }
             binding.buttonToggleNotificationContent.visibility = View.VISIBLE
             if (statusViewData.isCollapsed) {
@@ -337,7 +324,7 @@ internal class StatusNotificationViewHolder(
             binding.notificationContent.filters = NO_INPUT_FILTER
             setupAttachmentInfo(statusViewData.status)
         }
-        val emojifiedText = content.emojify(
+        val emojifiedText = statusViewData.content.emojify(
             emojis = emojis,
             view = binding.notificationContent,
             animate = animateEmojis

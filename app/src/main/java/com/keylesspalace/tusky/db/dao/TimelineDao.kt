@@ -35,7 +35,7 @@ SELECT h.id, s.serverId, s.url, s.tuskyAccountId,
 s.authorServerId, s.inReplyToId, s.inReplyToAccountId, s.createdAt, s.editedAt,
 s.emojis, s.reblogsCount, s.favouritesCount, s.repliesCount, s.reblogged, s.favourited, s.bookmarked, s.sensitive,
 s.spoilerText, s.visibility, s.mentions, s.tags, s.application,
-s.content, s.attachments, s.poll, s.card, s.muted, s.expanded, s.contentShowing, s.contentCollapsed, s.pinned, s.language, s.filtered,
+s.content, s.attachments, s.poll, s.card, s.muted, s.expanded, s.contentShowing, s.contentCollapsed, s.pinned, s.language, s.filtered, s.filterActive,
 a.serverId as 'a_serverId', a.tuskyAccountId as 'a_tuskyAccountId',
 a.localUsername as 'a_localUsername', a.username as 'a_username',
 a.displayName as 'a_displayName', a.url as 'a_url', a.avatar as 'a_avatar',
@@ -147,7 +147,9 @@ AND tuskyAccountId = :tuskyAccountId
      * Returns the id directly above [id], or null if [id] is the id of the top item
      */
     @Query(
-        "SELECT id FROM HomeTimelineEntity WHERE tuskyAccountId = :tuskyAccountId AND (LENGTH(:id) < LENGTH(id) OR (LENGTH(:id) = LENGTH(id) AND :id < id)) ORDER BY LENGTH(id) ASC, id ASC LIMIT 1"
+        "SELECT id FROM HomeTimelineEntity WHERE tuskyAccountId = :tuskyAccountId " +
+            "AND (LENGTH(:id) < LENGTH(id) OR (LENGTH(:id) = LENGTH(id) AND :id < id)) " +
+            "ORDER BY LENGTH(id) ASC, id ASC LIMIT 1"
     )
     abstract suspend fun getIdAbove(tuskyAccountId: Long, id: String): String?
 
@@ -155,7 +157,9 @@ AND tuskyAccountId = :tuskyAccountId
      * Returns the ID directly below [id], or null if [id] is the ID of the bottom item
      */
     @Query(
-        "SELECT id FROM HomeTimelineEntity WHERE tuskyAccountId = :tuskyAccountId AND (LENGTH(:id) > LENGTH(id) OR (LENGTH(:id) = LENGTH(id) AND :id > id)) ORDER BY LENGTH(id) DESC, id DESC LIMIT 1"
+        "SELECT id FROM HomeTimelineEntity WHERE tuskyAccountId = :tuskyAccountId " +
+            "AND (LENGTH(:id) > LENGTH(id) OR (LENGTH(:id) = LENGTH(id) AND :id > id)) " +
+            "ORDER BY LENGTH(id) DESC, id DESC LIMIT 1"
     )
     abstract suspend fun getIdBelow(tuskyAccountId: Long, id: String): String?
 
@@ -164,7 +168,9 @@ AND tuskyAccountId = :tuskyAccountId
 
     /** Developer tools: Find N most recent status IDs */
     @Query(
-        "SELECT id FROM HomeTimelineEntity WHERE tuskyAccountId = :tuskyAccountId ORDER BY LENGTH(id) DESC, id DESC LIMIT :count"
+        "SELECT id FROM HomeTimelineEntity " +
+            "WHERE tuskyAccountId = :tuskyAccountId " +
+            "ORDER BY LENGTH(id) DESC, id DESC LIMIT :count"
     )
     abstract suspend fun getMostRecentNHomeTimelineIds(tuskyAccountId: Long, count: Int): List<String>
 

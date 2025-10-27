@@ -2,11 +2,13 @@ import app.cash.licensee.SpdxId
 
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.licensee)
+    alias(libs.plugins.play.publisher)
 }
 
 apply from: 'getGitSha.gradle'
@@ -32,8 +34,8 @@ android {
         namespace "com.keylesspalace.tusky"
         minSdk 24
         targetSdk 36
-        versionCode 133
-        versionName "29.0"
+        versionCode 138
+        versionName "31.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
 
@@ -42,6 +44,20 @@ android {
         buildConfigField("String", "CUSTOM_LOGO_URL", "\"$CUSTOM_LOGO_URL\"")
         buildConfigField("String", "CUSTOM_INSTANCE", "\"$CUSTOM_INSTANCE\"")
         buildConfigField("String", "SUPPORT_ACCOUNT_URL", "\"$SUPPORT_ACCOUNT_URL\"")
+    }
+    signingConfigs {
+        test {
+            keyAlias System.getenv("KEY_ALIAS_TEST")
+            keyPassword System.getenv("KEY_PASSWORD_TEST")
+            storeFile file("Tusky.jks")
+            storePassword System.getenv("KEYSTORE_PASSWORD")
+        }
+        release {
+            keyAlias System.getenv("KEY_ALIAS_RELEASE")
+            keyPassword System.getenv("KEY_PASSWORD_RELEASE")
+            storeFile file("Tusky.jks")
+            storePassword System.getenv("KEYSTORE_PASSWORD")
+        }
     }
     buildTypes {
         debug {
@@ -64,12 +80,21 @@ android {
 
     flavorDimensions += "color"
     productFlavors {
-        blue {}
+        blue {
+            signingConfig = signingConfigs.release
+        }
         green {
             resValue "string", "app_name", APP_NAME + " Test"
             applicationIdSuffix ".test"
             versionNameSuffix "-" + gitSha
             isDefault true
+            signingConfig = signingConfigs.test
+        }
+    }
+
+    kotlin {
+        compilerOptions {
+            freeCompilerArgs = ["-Xannotation-default-target=param-property"]
         }
     }
 
@@ -80,6 +105,7 @@ android {
     }
 
     buildFeatures {
+        compose true
         buildConfig true
         resValues true
         viewBinding true
@@ -126,6 +152,15 @@ android {
                 "${variant.flavorName}_${buildType.name}.apk"
         }
     }
+
+    playConfigs {
+        register("green") {
+            track.set("production")
+        }
+        register("blue") {
+            track.set("internal")
+        }
+    }
 }
 
 ksp {
@@ -137,8 +172,8 @@ ksp {
 licensee {
     allow(SpdxId.Apache_20)
     allow(SpdxId.MIT)
+    allow(SpdxId.BSD_3_Clause)
     allowUrl('https://github.com/AOMediaCodec/libavif/blob/master/LICENSE')
-    allowUrl('https://www.bouncycastle.org/licence.html')
 }
 
 configurations {
@@ -155,6 +190,11 @@ dependencies {
     implementation libs.bundles.androidx
     implementation libs.bundles.room
     ksp libs.androidx.room.compiler
+
+    implementation platform(libs.androidx.compose.bom)
+    implementation libs.androidx.compose.material
+    implementation libs.androidx.compose.ui.tooling.preview
+    debugImplementation libs.androidx.compose.ui.tooling
 
     implementation libs.android.material
 
@@ -187,8 +227,7 @@ dependencies {
 
     implementation libs.bundles.filemojicompat
 
-    implementation libs.bouncycastle
-    implementation libs.unified.push
+    implementation libs.bundles.unifiedpush
 
     implementation libs.bundles.xmldiff
 
@@ -201,4 +240,7 @@ dependencies {
     testImplementation libs.kotlinx.coroutines.test
     testImplementation libs.androidx.work.testing
     testImplementation libs.turbine
+
+    testImplementation libs.androidx.compose.test
+    debugImplementation libs.androidx.compose.test.manifest
 }

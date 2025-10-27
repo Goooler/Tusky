@@ -132,6 +132,8 @@
     <string name="action_browser_login">Login with Browser</string>
     <string name="action_logout">Log out</string>
     <string name="action_logout_confirm">Are you sure you want to log out of %1$s? This will delete all local data of the account, including drafts and preferences.</string>
+    <string name="action_remove_account">Remove account</string>
+    <string name="action_remove_account_confirm">Are you sure you want to remove the account %1$s from Tusky? This will delete all local data of the account, including drafts and preferences.</string>
     <string name="action_post_failed">Upload failed</string>
     <plurals name="action_post_failed_detail">
         <item quantity="one">Your post failed to upload and has been saved to drafts.\n\nEither the server could not be contacted, or it rejected the post.</item>
@@ -210,6 +212,7 @@
     <string name="action_dismiss">Dismiss</string>
     <string name="action_details">Details</string>
     <string name="action_add_reaction">add reaction</string>
+    <string name="action_rehide_status">Re-hide filtered status</string>
 
     <string name="title_hashtags_dialog">Hashtags</string>
     <string name="title_mentions_dialog">Mentions</string>
@@ -423,7 +426,7 @@
          * the url can be changed to link to the localized version of the license.
     -->
     <string name="about_project_site">Project website: https://tusky.app</string>
-    <string name="about_bug_feature_request_site">Bug reports &amp; feature requests:\nhttps://github.com/tuskyapp/Tusky/issues</string>
+    <string name="about_bug_feature_request_site">Bug reports &amp; feature requests:\nhttps://codeberg.org/tusky/Tusky/issues</string>
     <string name="about_tusky_account">Tusky\'s Profile</string>
 
     <string name="post_share_content">Share content of post</string>
@@ -470,6 +473,7 @@
     <string name="filter_dialog_whole_word_description">When the keyword or phrase is alphanumeric only, it will only be applied if it matches the whole word</string>
     <string name="filter_add_description">Phrase to filter</string>
     <string name="filter_expiration_format">%1$s (%2$s)</string>
+    <string name="message_filters_empty">You have no filters.</string>
 
     <string name="add_account_name">Add Account</string>
     <string name="add_account_description">Add new Mastodon Account</string>
@@ -491,9 +495,7 @@
 
     <string name="compose_active_account_description">Posting as %1$s</string>
 
-    <plurals name="hint_describe_for_visually_impaired">
-        <item quantity="other">Describe contents for visually impaired (%1$d character limit)</item>
-    </plurals>
+    <string name="hint_describe_for_visually_impaired">Describe contents for visually impaired</string>
     <string name="set_focus_description">Tap or drag the circle to choose the focal point which will always be visible in thumbnails.</string>
     <string name="action_set_caption">Set caption</string>
     <string name="action_set_focus">Set focus point</string>
@@ -915,6 +917,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="confirm_dismiss_caption">Discard caption changes?</string>
+    <string name="confirm_dismiss_poll">Discard poll changes?</string>
 
     <string name="unblock_success">Unblocked %1$s</string>
     <string name="unmute_success">Unmuted %1$s</string>
@@ -931,4 +934,52 @@
 
     <string name="reblog_confirm">Boost this post?</string>
     <string name="favourite_confirm">Favorite this post?</string>
+
+    <string name="edit_image_rotate">Rotate</string>
+    <string name="edit_image_flip">Flip</string>
+    <string name="edit_image_flip_horizontally">Flip horizontally</string>
+    <string name="edit_image_flip_vertically">Flip vertically</string>
+
+    <string name="report_which_rules_violated">Which rules are being violated? Select all that apply.</string>
+    <string name="report_problem_with_post">What is the problem with this post?</string>
+    <string name="report_category_spam_description">Malicious links, fake engagement, or repetitive replies</string>
+    <string name="report_category_spam_title">It\'s spam</string>
+    <string name="report_category_legal_description">You believe it violates the law of your or the server\'s country</string>
+    <string name="report_category_legal_title">It\'s illegal</string>
+    <string name="report_category_violation_description">You are aware that it breaks specific rules</string>
+    <string name="report_category_violation_title">It violates server rules</string>
+    <string name="report_category_other_description">The issue does not fit into other categories</string>
+    <string name="report_category_other_title">It\'s something else</string>
+
+    <string name="action_login_again">Login again</string>
+    <string name="account_disconnected_title">Account disconnected</string>
+    <string name="account_disconnected_message">Tusky\'s login for %1$s is no longer valid. This can happen because you changed your password or revoked access for Tusky. Please log in again.</string>
+
+    <string name="filter_context_home">Home and Lists</string>
+
+    <plurals name="seconds">
+        <item quantity="one">%1$s second</item>
+        <item quantity="other">%1$s seconds</item>
+    </plurals>
+    <plurals name="minutes">
+        <item quantity="one">%1$s minute</item>
+        <item quantity="other">%1$s minutes</item>
+    </plurals>
+    <plurals name="hours">
+        <item quantity="one">%1$s hour</item>
+        <item quantity="other">%1$s hours</item>
+    </plurals>
+    <plurals name="days">
+        <item quantity="one">%1$s day</item>
+        <item quantity="other">%1$s days</item>
+    </plurals>
+
+    <!-- text shown above a scheduled post to indicate it is a reply -->
+    <string name="scheduled_post_reply">Reply</string>
+
+    <string name="scheduled_posts_not_supported">Your server %1$s does not support scheduled posts</string>
+
+    <string name="scheduled_post_deletion_error">Failed to delete scheduled post.</string>
+
+    <string name="unified_push_error_no_vapid_key">Failed setting up Unified Push: %1$s has invalid vapid key.</string>
 </resources>

@@ -38,14 +38,13 @@ data class InstanceEntity(
     val imageSizeLimit: Int?,
     val imageMatrixLimit: Int?,
     val maxMediaAttachments: Int?,
+    @ColumnInfo(defaultValue = "null") val mediaDescriptionLimit: Int?,
     val maxFields: Int?,
     val maxFieldNameLength: Int?,
     val maxFieldValueLength: Int?,
     val translationEnabled: Boolean?,
     val mastodonApiVersion: Int?,
-
-    // ToDo: Remove this again when filter v1 support is dropped
-    @ColumnInfo(defaultValue = "false") val filterV2Supported: Boolean = false
+    val vapidKey: String?
 )
 
 @TypeConverters(Converters::class)
@@ -67,9 +66,11 @@ data class InstanceInfoEntity(
     val imageSizeLimit: Int?,
     val imageMatrixLimit: Int?,
     val maxMediaAttachments: Int?,
+    val mediaDescriptionLimit: Int?,
     val maxFields: Int?,
     val maxFieldNameLength: Int?,
     val maxFieldValueLength: Int?,
     val translationEnabled: Boolean?,
     val mastodonApiVersion: Int?,
+    val vapidKey: String?
 )

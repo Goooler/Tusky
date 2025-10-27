@@ -6,6 +6,49 @@
 
 ### Significant bug fixes
 
+## v31.1
+
+### Significant bug fixes
+
+- Reverted the new media picker introduced in v31.0, as it has less features. https://codeberg.org/tusky/Tusky/pulls/5251
+- Fixes an issue where Tusky would crash when trying to set up UnifiedPush with a server that has no vapid key configured. https://codeberg.org/tusky/Tusky/pulls/5250
+
+## v31.0
+
+### New features and other improvements
+
+- The Scheduled Posts view has been improved, it now shows the full posts including all available metadata. https://codeberg.org/tusky/Tusky/pulls/5229
+- It is now possible to re-hide filtered posts with a new option in the three-dot-menu on posts. https://codeberg.org/tusky/Tusky/pulls/5215
+- Tusky now reads the character limit for media descriptions from the server instead of always defaulting to 1500. The limit is now shown in the media description dialog. https://codeberg.org/tusky/Tusky/pulls/5210
+- Tusky will now show an informational dialog when the active user is logged out. https://codeberg.org/tusky/Tusky/pulls/5211
+- There is now a separate option to pick audio files in the compose view, and most Androids will now show a better image picker https://codeberg.org/tusky/Tusky/issues/5216
+- The content warning icon in the compose view has now an active and an inactive variant https://codeberg.org/tusky/Tusky/pulls/5202
+
+### Significant bug fixes
+- Fixes a crash caused by incorrect handling of plurals in some languages https://codeberg.org/tusky/Tusky/issues/5216
+- Fixes a compatibility issue with GoToSocial's push notifications https://codeberg.org/tusky/Tusky/pulls/5236
+
+### Removed features
+
+- Tusky no longer supports the v1 filter api and will only use v2 going forward. If you are on a server that only supports v1, filtering will no longer work in Tusky. https://codeberg.org/tusky/Tusky/pulls/5215
+
+## v30.0
+
+### New features and other improvements
+
+- The Tusky repository is now on [Codeberg](https://codeberg.org/tusky/Tusky) https://codeberg.org/tusky/Tusky/pulls/5133 https://codeberg.org/tusky/Tusky/pulls/5134 https://codeberg.org/tusky/Tusky/pulls/5144
+- The reporting flow has been overhauled. It is now possible to select a report reason. https://codeberg.org/tusky/Tusky/pulls/5188
+- The image editor got an improved look https://codeberg.org/tusky/Tusky/pulls/5173
+- Tusky can now be used with onion services https://codeberg.org/tusky/Tusky/issues/5170
+- A dialog has been added that prevents accidentally dismissing the poll composer https://codeberg.org/tusky/Tusky/issues/5131
+- The UnifiedPush connector has been updated, which should improve reliability of pushes https://codeberg.org/tusky/Tusky/issues/5040
+- Tusky now supports 16KB page sizes https://codeberg.org/tusky/Tusky/pulls/5193
+
+### Significant bug fixes
+- Fixes a bug where sometimes clicking a post would open the wrong thread https://codeberg.org/tusky/Tusky/issues/5142
+- Small layout tweaks https://codeberg.org/tusky/Tusky/pulls/5153 https://codeberg.org/tusky/Tusky/pulls/5159
+- It is now harder to lose a draft when switching to other apps while editing https://codeberg.org/tusky/Tusky/issues/5166
+
 ## v29.0
 
 ### New features and other improvements

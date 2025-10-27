@@ -1,0 +1,38 @@
+# When a tag is created, create a release build and upload it to Google Play
+
+when:
+  - event: tag
+
+depends_on:
+  - check-and-build
+
+steps:
+  # https://github.com/woodpecker-ci/woodpecker/issues/5181
+  - name: fix permissions
+    # using this image specifically because it runs as root, like the clone step also does
+    image: woodpeckerci/plugin-git
+    commands:
+      - chmod -R 777 .
+
+  - name: Deploy
+    image: cimg/android:2025.09.1
+    environment:
+      KEYSTORE:
+        from_secret: KEYSTORE
+      KEY_ALIAS_RELEASE:
+        from_secret: KEY_ALIAS_RELEASE
+      KEY_PASSWORD_RELEASE:
+        from_secret: KEY_PASSWORD_RELEASE
+      KEYSTORE_PASSWORD:
+        from_secret: KEYSTORE_PASSWORD
+      ANDROID_PUBLISHER_CREDENTIALS:
+        from_secret: ANDROID_PUBLISHER_CREDENTIALS
+    commands:
+      # create changelog file
+      - mkdir -p app/src/blueRelease/play/release-notes/en-US
+      - cp $(find fastlane/metadata/android/en-US/changelogs | sort -n -k6 -t/ | tail -n 1) app/src/blueRelease/play/release-notes/en-US/default.txt
+      # prepare keystore
+      - echo $KEYSTORE | base64 -d > app/Tusky.jks
+      # build and upload
+      - export GRADLE_USER_HOME=$PWD/.gradle
+      - ./gradlew app:bundleBlueRelease app:publishBlueReleaseBundle

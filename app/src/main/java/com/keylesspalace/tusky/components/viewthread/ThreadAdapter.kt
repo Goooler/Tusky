@@ -26,21 +26,20 @@ import com.keylesspalace.tusky.adapter.StatusBaseViewHolder
 import com.keylesspalace.tusky.adapter.StatusDetailedViewHolder
 import com.keylesspalace.tusky.adapter.StatusViewHolder
 import com.keylesspalace.tusky.databinding.ItemStatusFilteredBinding
-import com.keylesspalace.tusky.entity.Filter
 import com.keylesspalace.tusky.interfaces.StatusActionListener
 import com.keylesspalace.tusky.util.StatusDisplayOptions
 import com.keylesspalace.tusky.viewdata.StatusViewData
 
 class ThreadAdapter(
     private val statusDisplayOptions: StatusDisplayOptions,
-    private val statusActionListener: StatusActionListener
+    private val statusActionListener: StatusActionListener<StatusViewData.Concrete>
 ) : ListAdapter<StatusViewData.Concrete, RecyclerView.ViewHolder>(ThreadDifferCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             VIEW_TYPE_STATUS ->
-                StatusViewHolder(inflater.inflate(R.layout.item_status, parent, false))
+                StatusViewHolder<StatusViewData.Concrete>(inflater.inflate(R.layout.item_status, parent, false))
             VIEW_TYPE_STATUS_FILTERED ->
                 FilteredStatusViewHolder(
                     ItemStatusFilteredBinding.inflate(inflater, parent, false),
@@ -59,11 +58,12 @@ class ThreadAdapter(
     }
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int, payloads: List<Any>) {
-        val status = getItem(position)
-        if (viewHolder is FilteredStatusViewHolder) {
-            viewHolder.bind(status)
-        } else if (viewHolder is StatusBaseViewHolder) {
-            viewHolder.setupWithStatus(status, statusActionListener, statusDisplayOptions, payloads, false)
+        val viewData = getItem(position)
+        if (viewData.isDetailed || !viewData.isFilterWarn) {
+            (viewHolder as StatusBaseViewHolder<StatusViewData.Concrete>)
+                .setupWithStatus(viewData, statusActionListener, statusDisplayOptions, payloads, false)
+        } else {
+            (viewHolder as FilteredStatusViewHolder<StatusViewData.Concrete>).bind(viewData)
         }
     }
 
@@ -71,7 +71,7 @@ class ThreadAdapter(
         val viewData = getItem(position)
         return if (viewData.isDetailed) {
             VIEW_TYPE_STATUS_DETAILED
-        } else if (viewData.filter?.action == Filter.Action.WARN) {
+        } else if (viewData.isFilterWarn) {
             VIEW_TYPE_STATUS_FILTERED
         } else {
             VIEW_TYPE_STATUS

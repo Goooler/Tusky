@@ -35,6 +35,7 @@ import androidx.activity.viewModels
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.Px
+import androidx.appcompat.R as appcompatR
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.graphics.ColorUtils
@@ -191,7 +192,7 @@ class AccountActivity : BottomSheetActivity(), ActionButtonActivity, MenuProvide
     private fun loadResources() {
         toolbarColor = MaterialColors.getColor(binding.accountToolbar, materialR.attr.colorSurface)
         statusBarColorTransparent = getColor(R.color.transparent_statusbar_background)
-        statusBarColorOpaque = MaterialColors.getColor(binding.accountToolbar, materialR.attr.colorPrimaryDark)
+        statusBarColorOpaque = MaterialColors.getColor(binding.accountToolbar, appcompatR.attr.colorPrimaryDark)
         avatarSize = resources.getDimension(R.dimen.account_activity_avatar_size)
         titleVisibleHeight = resources.getDimensionPixelSize(R.dimen.account_activity_scroll_title_visible_height)
     }
@@ -692,7 +693,8 @@ class AccountActivity : BottomSheetActivity(), ActionButtonActivity, MenuProvide
 
         // because subscribing is Pleroma extension, enable it __only__ when we have non-null subscribing field
         // it's also now supported in Mastodon 3.3.0rc but called notifying and use different API call
-        if (!viewModel.isSelf && followState == FollowState.FOLLOWING &&
+        if (!viewModel.isSelf &&
+            followState == FollowState.FOLLOWING &&
             (relation.subscribing != null || relation.notifying != null)
         ) {
             binding.accountSubscribeButton.show()

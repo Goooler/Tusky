@@ -11,6 +11,8 @@ enum class AppTheme(val value: String) {
     companion object {
         fun stringValues() = entries.map { it.value }.toTypedArray()
 
+        fun of(value: String) = entries.find { it.value == value } ?: DEFAULT
+
         @JvmField
         val DEFAULT = AUTO_SYSTEM
     }
@@ -55,7 +57,7 @@ object PrefKeys {
     // each preference a key for it to work.
 
     const val SCHEMA_VERSION: String = "schema_version"
-    const val LAST_USED_PUSH_PROVDER = "lastUsedPushProvider"
+    const val LAST_USED_PUSH_PROVIDER = "lastUsedPushProvider"
 
     const val APP_THEME = "appTheme"
     const val LANGUAGE = "language"
@@ -99,7 +101,9 @@ object PrefKeys {
     const val NOTIFICATION_ALERT_VIBRATE = "notificationAlertVibrate"
     const val NOTIFICATION_ALERT_SOUND = "notificationAlertSound"
 
-    const val TAB_FILTER_HOME_REPLIES = "tabFilterHomeReplies_v2" // This was changed once to reset an unintentionally set default.
+    // This was changed once to reset an unintentionally set default.
+    const val TAB_FILTER_HOME_REPLIES = "tabFilterHomeReplies_v2"
+
     const val TAB_FILTER_HOME_BOOSTS = "tabFilterHomeBoosts"
     const val TAB_SHOW_HOME_SELF_BOOSTS = "tabShowHomeSelfBoosts"
 

@@ -47,7 +47,7 @@ s.favouritesCount as 's_favouritesCount', s.repliesCount as 's_repliesCount', s.
 s.bookmarked as 's_bookmarked', s.sensitive as 's_sensitive', s.spoilerText as 's_spoilerText', s.visibility as 's_visibility',
 s.mentions as 's_mentions', s.tags as 's_tags', s.application as 's_application', s.content as 's_content', s.attachments as 's_attachments', s.poll as 's_poll',
 s.card as 's_card', s.muted as 's_muted', s.expanded as 's_expanded', s.contentShowing as 's_contentShowing', s.contentCollapsed as 's_contentCollapsed',
-s.pinned as 's_pinned', s.language as 's_language', s.filtered as 's_filtered',
+s.pinned as 's_pinned', s.language as 's_language', s.filtered as 's_filtered', s.filterActive as 's_filterActive',
 sa.serverId as 'sa_serverId', sa.tuskyAccountId as 'sa_tuskyAccountId',
 sa.localUsername as 'sa_localUsername', sa.username as 'sa_username',
 sa.displayName as 'sa_displayName', sa.url as 'sa_url', sa.avatar as 'sa_avatar',
@@ -131,7 +131,12 @@ AND
     @Query("SELECT id FROM NotificationEntity WHERE tuskyAccountId = :accountId ORDER BY LENGTH(id) DESC, id DESC LIMIT 1")
     abstract suspend fun getTopId(accountId: Long): String?
 
-    @Query("SELECT id FROM NotificationEntity WHERE tuskyAccountId = :accountId AND type IS NULL ORDER BY LENGTH(id) DESC, id DESC LIMIT 1")
+    @Query(
+        "SELECT id FROM NotificationEntity " +
+            "WHERE tuskyAccountId = :accountId " +
+            "AND type IS NULL " +
+            "ORDER BY LENGTH(id) DESC, id DESC LIMIT 1"
+    )
     abstract suspend fun getTopPlaceholderId(accountId: Long): String?
 
     /**
@@ -161,7 +166,9 @@ AND
      * Returns the id directly above [id], or null if [id] is the id of the top item
      */
     @Query(
-        "SELECT id FROM NotificationEntity WHERE tuskyAccountId = :tuskyAccountId AND (LENGTH(:id) < LENGTH(id) OR (LENGTH(:id) = LENGTH(id) AND :id < id)) ORDER BY LENGTH(id) ASC, id ASC LIMIT 1"
+        "SELECT id FROM NotificationEntity WHERE tuskyAccountId = :tuskyAccountId " +
+            "AND (LENGTH(:id) < LENGTH(id) OR (LENGTH(:id) = LENGTH(id) AND :id < id)) " +
+            "ORDER BY LENGTH(id) ASC, id ASC LIMIT 1"
     )
     abstract suspend fun getIdAbove(tuskyAccountId: Long, id: String): String?
 
@@ -169,7 +176,9 @@ AND
      * Returns the ID directly below [id], or null if [id] is the ID of the bottom item
      */
     @Query(
-        "SELECT id FROM NotificationEntity WHERE tuskyAccountId = :tuskyAccountId AND (LENGTH(:id) > LENGTH(id) OR (LENGTH(:id) = LENGTH(id) AND :id > id)) ORDER BY LENGTH(id) DESC, id DESC LIMIT 1"
+        "SELECT id FROM NotificationEntity WHERE tuskyAccountId = :tuskyAccountId " +
+            "AND (LENGTH(:id) > LENGTH(id) OR (LENGTH(:id) = LENGTH(id) AND :id > id)) " +
+            "ORDER BY LENGTH(id) DESC, id DESC LIMIT 1"
     )
     abstract suspend fun getIdBelow(tuskyAccountId: Long, id: String): String?
 }

@@ -1,0 +1,45 @@
+when:
+  - event: pull_request
+  - event: manual
+  - event: push
+    branch: develop
+  - event: tag
+
+steps:
+  # https://github.com/woodpecker-ci/woodpecker/issues/5181
+  - name: fix permissions
+    # using this image specifically because it runs as root, like the clone step also does
+    image: woodpeckerci/plugin-git
+    commands:
+      - chmod -R 777 .
+
+  - name: Licensee
+    image: cimg/android:2025.09.1
+    commands:
+      - export GRADLE_USER_HOME=$PWD/.gradle
+      - ./gradlew licensee
+
+  - name: ktlint
+    image: cimg/android:2025.09.1
+    commands:
+      - export GRADLE_USER_HOME=$PWD/.gradle
+      - ./gradlew ktlintCheck
+
+  - name: Regular lint
+    image: cimg/android:2025.09.1
+    commands:
+      - export GRADLE_USER_HOME=$PWD/.gradle
+      - ./gradlew app:lintGreenDebug
+
+  - name: Test
+    image: cimg/android:2025.09.1
+    commands:
+      - export GRADLE_USER_HOME=$PWD/.gradle
+      - ./gradlew app:testGreenDebugUnitTest
+
+  - name: Build
+    image: cimg/android:2025.09.1
+    commands:
+      - export GRADLE_USER_HOME=$PWD/.gradle
+      - ./gradlew app:buildGreenDebug
+

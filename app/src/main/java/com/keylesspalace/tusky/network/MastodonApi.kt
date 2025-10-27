@@ -27,7 +27,6 @@ import com.keylesspalace.tusky.entity.DeletedStatus
 import com.keylesspalace.tusky.entity.Emoji
 import com.keylesspalace.tusky.entity.Filter
 import com.keylesspalace.tusky.entity.FilterKeyword
-import com.keylesspalace.tusky.entity.FilterV1
 import com.keylesspalace.tusky.entity.HashTag
 import com.keylesspalace.tusky.entity.Instance
 import com.keylesspalace.tusky.entity.InstanceV1
@@ -88,17 +87,10 @@ interface MastodonApi {
     suspend fun getCustomEmojis(): NetworkResult<List<Emoji>>
 
     @GET("api/v1/instance")
-    suspend fun getInstanceV1(
-        @Header(DOMAIN_HEADER) domain: String? = null
-    ): NetworkResult<InstanceV1>
+    suspend fun getInstanceV1(): NetworkResult<InstanceV1>
 
     @GET("api/v2/instance")
-    suspend fun getInstance(
-        @Header(DOMAIN_HEADER) domain: String? = null
-    ): NetworkResult<Instance>
-
-    @GET("api/v1/filters")
-    suspend fun getFiltersV1(): NetworkResult<List<FilterV1>>
+    suspend fun getInstance(): NetworkResult<Instance>
 
     @GET("api/v2/filters/{filterId}")
     suspend fun getFilter(@Path("filterId") filterId: String): NetworkResult<Filter>
@@ -290,7 +282,7 @@ interface MastodonApi {
     suspend fun scheduledStatuses(
         @Query("limit") limit: Int? = null,
         @Query("max_id") maxId: String? = null
-    ): NetworkResult<List<ScheduledStatus>>
+    ): Response<List<ScheduledStatus>>
 
     @DELETE("api/v1/scheduled_statuses/{id}")
     suspend fun deleteScheduledStatus(
@@ -537,30 +529,6 @@ interface MastodonApi {
     suspend fun deleteConversation(@Path("id") conversationId: String)
 
     @FormUrlEncoded
-    @POST("api/v1/filters")
-    suspend fun createFilterV1(
-        @Field("phrase") phrase: String,
-        @Field("context[]") context: List<String>,
-        @Field("irreversible") irreversible: Boolean?,
-        @Field("whole_word") wholeWord: Boolean?,
-        @Field("expires_in") expiresIn: FilterExpiration?
-    ): NetworkResult<FilterV1>
-
-    @FormUrlEncoded
-    @PUT("api/v1/filters/{id}")
-    suspend fun updateFilterV1(
-        @Path("id") id: String,
-        @Field("phrase") phrase: String,
-        @Field("context[]") context: List<String>,
-        @Field("irreversible") irreversible: Boolean?,
-        @Field("whole_word") wholeWord: Boolean?,
-        @Field("expires_in") expiresIn: FilterExpiration?
-    ): NetworkResult<FilterV1>
-
-    @DELETE("api/v1/filters/{id}")
-    suspend fun deleteFilterV1(@Path("id") id: String): NetworkResult<Unit>
-
-    @FormUrlEncoded
     @POST("api/v2/filters")
     suspend fun createFilter(
         @Field("title") title: String,
@@ -632,9 +600,11 @@ interface MastodonApi {
     @POST("api/v1/reports")
     suspend fun report(
         @Field("account_id") accountId: String,
-        @Field("status_ids[]") statusIds: List<String>,
+        @Field("status_ids[]") statusIds: Set<String>,
         @Field("comment") comment: String,
-        @Field("forward") isNotifyRemote: Boolean?
+        @Field("forward") forward: Boolean?,
+        @Field("category") category: String?,
+        @Field("rule_ids[]") ruleIds: Set<String>?,
     ): NetworkResult<Unit>
 
     @GET("api/v1/accounts/{id}/statuses")
@@ -675,7 +645,8 @@ interface MastodonApi {
     suspend fun subscribePushNotifications(
         @Header("Authorization") auth: String,
         @Header(DOMAIN_HEADER) domain: String,
-        @Field("subscription[endpoint]") endPoint: String,
+        @Field("subscription[standard]") standard: Boolean,
+        @Field("subscription[endpoint]") endpoint: String,
         @Field("subscription[keys][p256dh]") keysP256DH: String,
         @Field("subscription[keys][auth]") keysAuth: String,
         // The "data[alerts][]" fields to enable / disable notifications
@@ -757,4 +728,9 @@ interface MastodonApi {
 
     @POST("api/v1/notifications/requests/{id}/dismiss")
     suspend fun dismissNotificationRequest(@Path("id") notificationId: String): NetworkResult<Unit>
+
+    @GET("api/v1/instance/rules")
+    suspend fun getInstanceRules(
+        @Header(DOMAIN_HEADER) domain: String? = null
+    ): NetworkResult<List<Instance.Rule>>
 }

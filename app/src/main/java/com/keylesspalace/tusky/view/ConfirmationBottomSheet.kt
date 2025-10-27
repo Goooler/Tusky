@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter
 import android.widget.Filter
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.appcompat.R as appcompatR
 import androidx.core.content.edit
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toDrawable
@@ -48,12 +49,14 @@ class ConfirmationBottomSheet : BottomSheetDialogFragment(R.layout.bottomsheet_c
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val mode: Mode = requireArguments().getSerializableCompat(ARG_MODE)!!
         if (mode == Mode.REBLOG) {
-            selectedOption = Status.Visibility.valueOf(prefs.getNonNullString(PrefKeys.REBLOG_PRIVACY, Status.Visibility.PUBLIC.name))
+            selectedOption = Status.Visibility.valueOf(
+                prefs.getNonNullString(PrefKeys.REBLOG_PRIVACY, Status.Visibility.PUBLIC.name)
+            )
 
             binding.confirmTextView.setText(R.string.reblog_confirm)
             binding.confirmTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_repeat_24dp, 0, 0, 0)
             binding.confirmTextView.compoundDrawableTintList = ColorStateList.valueOf(
-                MaterialColors.getColor(binding.confirmTextView, materialR.attr.colorPrimary)
+                MaterialColors.getColor(binding.confirmTextView, appcompatR.attr.colorPrimary)
             )
 
             binding.confirmButton.setText(R.string.action_reblog)
@@ -97,7 +100,11 @@ class ConfirmationBottomSheet : BottomSheetDialogFragment(R.layout.bottomsheet_c
         }
     }
 
-    inner class OptionsAdapter(context: Context) : ArrayAdapter<Status.Visibility>(context, R.layout.item_reblog_option, reblogOptions) {
+    inner class OptionsAdapter(context: Context) : ArrayAdapter<Status.Visibility>(
+        context,
+        R.layout.item_reblog_option,
+        reblogOptions
+    ) {
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val item = getItem(position)
             val view: View = convertView ?: run {

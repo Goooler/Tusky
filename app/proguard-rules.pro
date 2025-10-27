@@ -26,10 +26,6 @@
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
 
-# Bouncy Castle -- Keep EC
--keep class org.bouncycastle.jcajce.provider.asymmetric.EC$* { *; }
--keep class org.bouncycastle.jcajce.provider.asymmetric.ec.KeyPairGeneratorSpi$EC
-
 # Preference fragments can be referenced by name, ensure they remain
 # https://github.com/tuskyapp/Tusky/issues/3161
 -keep class * extends androidx.preference.PreferenceFragmentCompat
@@ -70,3 +66,6 @@
 }
 
 -checkdiscard class com.keylesspalace.tusky.usecase.DeveloperToolsUseCase
+
+# https://codeberg.org/tusky/Tusky/pulls/5172
+-keep class androidx.appcompat.app.AppLocalesMetadataHolderService

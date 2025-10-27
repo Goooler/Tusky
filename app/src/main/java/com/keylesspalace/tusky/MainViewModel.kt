@@ -24,7 +24,7 @@ import com.keylesspalace.tusky.appstore.ConversationsLoadingEvent
 import com.keylesspalace.tusky.appstore.EventHub
 import com.keylesspalace.tusky.appstore.NewNotificationsEvent
 import com.keylesspalace.tusky.appstore.NotificationsLoadingEvent
-import com.keylesspalace.tusky.components.systemnotifications.NotificationService
+import com.keylesspalace.tusky.components.systemnotifications.NotificationHelper
 import com.keylesspalace.tusky.db.AccountManager
 import com.keylesspalace.tusky.entity.Emoji
 import com.keylesspalace.tusky.entity.Notification
@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -48,7 +49,7 @@ class MainViewModel @Inject constructor(
     private val eventHub: EventHub,
     private val accountManager: AccountManager,
     private val shareShortcutHelper: ShareShortcutHelper,
-    private val notificationService: NotificationService,
+    private val notificationHelper: NotificationHelper,
 ) : ViewModel() {
 
     private val activeAccount = accountManager.activeAccount!!
@@ -80,6 +81,9 @@ class MainViewModel @Inject constructor(
         .map { account -> account?.hasDirectMessageBadge == true }
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
+    private val _unauthorized: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val unauthorized: StateFlow<Boolean> = _unauthorized.asStateFlow()
+
     init {
         loadAccountData()
         fetchAnnouncements()
@@ -96,6 +100,10 @@ class MainViewModel @Inject constructor(
                 },
                 { throwable ->
                     Log.e(TAG, "Failed to fetch user info.", throwable)
+
+                    if (throwable is HttpException && throwable.code() == 401) {
+                        _unauthorized.value = true
+                    }
                 }
             )
         }
@@ -126,7 +134,8 @@ class MainViewModel @Inject constructor(
                         if (event.accountId == activeAccount.accountId) {
                             val hasDirectMessageNotification =
                                 event.notifications.any {
-                                    it.type == Notification.Type.Mention && it.status?.visibility == Status.Visibility.DIRECT
+                                    it.type == Notification.Type.Mention &&
+                                        it.status?.visibility == Status.Visibility.DIRECT
                                 }
 
                             if (hasDirectMessageNotification) {
@@ -160,15 +169,15 @@ class MainViewModel @Inject constructor(
         //   notifications fully disabled) will get unnoticed; and also an app restart cannot be easily triggered by the user.
 
         // TODO it's quite odd to separate channel creation (for an account) from the "is enabled by channels" question below
-        notificationService.createNotificationChannelsForAccount(activeAccount)
+        notificationHelper.createNotificationChannelsForAccount(activeAccount)
 
-        if (notificationService.areNotificationsEnabledBySystem()) {
+        if (notificationHelper.areNotificationsEnabledBySystem()) {
             viewModelScope.launch {
-                notificationService.setupNotifications(activity)
+                notificationHelper.setupNotifications(activity)
             }
         } else {
             viewModelScope.launch {
-                notificationService.disableAllNotifications()
+                notificationHelper.disableAllNotifications()
             }
         }
     }

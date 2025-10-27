@@ -40,6 +40,7 @@ import com.keylesspalace.tusky.R
 import com.keylesspalace.tusky.databinding.ActivityLoginBinding
 import com.keylesspalace.tusky.entity.AccessToken
 import com.keylesspalace.tusky.network.MastodonApi
+import com.keylesspalace.tusky.network.schemeForDomain
 import com.keylesspalace.tusky.util.getNonNullString
 import com.keylesspalace.tusky.util.openLinkInCustomTab
 import com.keylesspalace.tusky.util.rickRoll
@@ -87,7 +88,8 @@ class LoginActivity : BaseActivity() {
 
         if (savedInstanceState == null &&
             BuildConfig.CUSTOM_INSTANCE.isNotBlank() &&
-            !isAdditionalLogin()
+            !isAdditionalLogin() &&
+            !isRelogin()
         ) {
             binding.domainEditText.setText(BuildConfig.CUSTOM_INSTANCE)
             binding.domainEditText.setSelection(BuildConfig.CUSTOM_INSTANCE.length)
@@ -98,6 +100,11 @@ class LoginActivity : BaseActivity() {
                 .load(BuildConfig.CUSTOM_LOGO_URL)
                 .placeholder(null)
                 .into(binding.loginLogo)
+        }
+
+        if (isRelogin()) {
+            binding.domainEditText.setText(accountManager.activeAccount!!.domain)
+            binding.domainEditText.isEnabled = false
         }
 
         binding.loginButton.setOnClickListener { onLoginClick(true) }
@@ -112,7 +119,7 @@ class LoginActivity : BaseActivity() {
         }
 
         setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(isAdditionalLogin())
+        supportActionBar?.setDisplayHomeAsUpEnabled(isAdditionalLogin() || isRelogin())
         supportActionBar?.setDisplayShowTitleEnabled(false)
     }
 
@@ -136,9 +143,9 @@ class LoginActivity : BaseActivity() {
         binding.domainTextInputLayout.error = null
 
         val domain = canonicalizeDomain(binding.domainEditText.text.toString())
-
+        val scheme = schemeForDomain(domain)
         try {
-            HttpUrl.Builder().host(domain).scheme("https").build()
+            HttpUrl.Builder().host(domain).scheme(scheme).build()
         } catch (_: IllegalArgumentException) {
             setLoading(false)
             binding.domainTextInputLayout.error = getString(R.string.error_invalid_domain)
@@ -190,7 +197,7 @@ class LoginActivity : BaseActivity() {
         // To authorize this app and log in it's necessary to redirect to the domain given,
         // login there, and the server will redirect back to the app with its response.
         val uri = Uri.Builder()
-            .scheme("https")
+            .scheme(schemeForDomain(domain))
             .authority(domain)
             .path(MastodonApi.ENDPOINT_AUTHORIZE)
             .appendQueryParameter("client_id", clientId)
@@ -318,6 +325,10 @@ class LoginActivity : BaseActivity() {
         return intent.getIntExtra(LOGIN_MODE, MODE_DEFAULT) == MODE_ADDITIONAL_LOGIN
     }
 
+    private fun isRelogin(): Boolean {
+        return intent.getIntExtra(LOGIN_MODE, MODE_DEFAULT) == MODE_RELOGIN
+    }
+
     companion object {
         private const val TAG = "LoginActivity" // logging tag
         private const val OAUTH_SCOPES = "read write follow push"
@@ -328,9 +339,9 @@ class LoginActivity : BaseActivity() {
 
         const val MODE_DEFAULT = 0
         const val MODE_ADDITIONAL_LOGIN = 1
+        const val MODE_RELOGIN = 2
 
-        @JvmStatic
-        fun getIntent(context: Context, mode: Int): Intent {
+        fun newIntent(context: Context, mode: Int): Intent {
             val loginIntent = Intent(context, LoginActivity::class.java)
             loginIntent.putExtra(LOGIN_MODE, mode)
             return loginIntent
